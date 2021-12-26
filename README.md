@@ -4,10 +4,10 @@ C++ based project built to compile data fed to the program to process, sort, and
 What the project does:
 
 Imports base file into a vector of data structs
-Print Records
-Element: Insert/Modify/Remove
-Sort By: Name/Price/Quantity
-Generate Product ID
-Search Element
-Import and Merge File
-Check for Duplicates
+Print Records  
+Element: Insert/Modify/Remove  
+Sort By: Name/Price/Quantity  
+Generate Product ID  
+Search Element  
+Import and Merge File  
+Check for Duplicates  
