@@ -12,4 +12,4 @@ oatmeal 3.99 22
 pen 0.99 58
 paper 11.99 89
 deodorant 4.88 18
-crackers 0.99 8 
+crackers 0.99 8
