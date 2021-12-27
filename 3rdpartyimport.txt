@@ -12,4 +12,4 @@ desktop 599.95 8
 keyboard 29.99 12
 mouse 39.99 14
 adapter 19.99 15
-crackers 0.99 8
+crackers 0.99 8 
