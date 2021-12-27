@@ -1,0 +1,15 @@
+name price quantity
+cookies	1.99 85
+bakingsoda 3.85 60
+sheets 39.99 20
+nightstand 89.99 2
+jacket 119.99 6
+lamp 29.35 5
+lightbulb 1.99 45
+doorknob 29.99 12
+laptop 399.95 4
+desktop 599.95 8
+keyboard 29.99 12
+mouse 39.99 14
+adapter 19.99 15
+crackers 0.99 8
