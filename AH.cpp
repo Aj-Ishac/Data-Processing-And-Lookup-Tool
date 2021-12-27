@@ -21,7 +21,7 @@ struct Records {
 
 void printVector(vector<Records>);
 void MenuController(vector<Records>&);
-char printMenu(char);
+void printMainMenu();
 
 void SortByName(vector<Records>&, string, string);
 void SortByPrice(vector<Records>&, string, string);
@@ -84,11 +84,10 @@ int main()
     //figure out how to add two letters to ID
     //consistency on input output (case being element funcs)
     //when importing. configure a system to match string to name, float to price, int to qty
-
+    //output into basefile
     cout << "---Base data from file-------------------" << endl;
     printVector(record);
-
-    cout << endl << "You are at the beginning of the MenuController" << endl;
+    bool isSortedforBS = false;
     MenuController(record);
 
     //ModifyElement(record);
@@ -107,122 +106,139 @@ int main()
 
     //removeDuplicates(record);
     //GenerateProductID(record);
-    printVector(record);
 
     inFile.close();
     return 0;
 }
-
+//https://docs.github.com/en/get-started/quickstart/hello-world
 //print, sort(name, price, qty), insert, modify, remove, generateproductid, importvectors
 //(make sure is sorted) search, remove dupes, 
-char printMenu(char choice)
-{
+void printMainMenu()
+{   
+    cout << endl;
+    cout << "Beginning of the Menu Controller" << endl;
+    cout << "-----------------------------------------" << endl;
     cout << " 1. Print Records" << endl;
-    cout << " 2. Element: Insert/Modify/Remove" << endl;
-    cout << " 3. Sort By: Name/Price/Quantity" << endl;
+    cout << " 2. Sort By: Name/Price/Quantity" << endl;
+    cout << " 3. Element: Insert/Modify/Remove" << endl;
     cout << " 4. Generate Product ID" << endl;
     cout << " 5. Search Element" << endl;
     cout << " 6. Import and Merge File" << endl;
     cout << " 7. Check for Duplicates" << endl;
     cout << " 8. Diagnostics" << endl;
-    cout << " 0. Restart" << endl << endl;
-    cout << " Input choice (0-7): ";
-    cin >> choice;
-    cout << endl << endl;
+    cout << " 9. Quit" << endl;
+    cout << " 0. Restart" << endl;
+    cout << "-----------------------------------------" << endl;
 
-    return choice;
+    cout << "Input choice (0-7): ";
+
 }
 
 void MenuController(vector<Records>& record)
 {
     bool Repeat = false;
-    string Sort_By, Sort_Order;
+    string Sort_Preference, Sort_Order;
 
-    char choice = 0;
-    choice = printMenu(choice);
+    char choice;
+    printMainMenu();
+    cin >> choice;
 
     switch (choice)
     {
-    case 1:
+    case '1': //pass
+    
+        cout << "Printing Records.." << endl << endl;
         printVector(record);
-        break;
+        MenuController(record);
 
-    case 2:
+    case '2':
+        //pass
+        cout << endl;
+        cout << " 1. Sort by Name" << endl;
+        cout << " 2. Sort by Price" << endl;
+        cout << " 3. Sort by Quantity" << endl << endl;
+
+        cout << "Input choice (1-3): ";
+        cin >> choice;
+
+        switch (choice)
+        {
+        case '1':
+            SortByName(record, Sort_Order, Sort_Preference);
+            //return bool to indicate is sorted for dependencies
+
+            return;
+
+        case '2':
+
+            SortByPrice(record, Sort_Order, Sort_Preference);
+            return;
+
+        case '3':
+
+            SortByQuantity(record, Sort_Order, Sort_Preference);
+            return;
+
+        }
+
+    case '3': 
+        //modify and remove needs sort to be in place
+        //insert is done
+        cout << endl;
         cout << " 1. Insert Element" << endl;
         cout << " 2. Modify Element" << endl;
         cout << " 3. Remove Element" << endl << endl;
 
-        cout << " Input choice (1-3): ";
+        cout << "Input choice (1-3): ";
         cin >> choice;
-        cout << endl << endl;
 
         switch (choice)
         {
-        case 1:
+        case '1':
             InsertElement(record);
-            break;
-        case 2:
+            return;
+        case '2':
             ModifyElement(record);
             break;
-        case 3:
+        case '3':
             RemoveElement(record);
             break;
         }
 
-    case 3:
-        cout << " 1. Sort by Name" << endl;
-        cout << " 2. Sort by Price" << endl;
-        cout << " 3. Sort by Quantity" << endl;
-
-        cout << " Input choice (1-3): ";
-        cin >> choice;
-        cout << endl << endl;
-
-        switch (choice)
-        {
-        case 1:
-            //SortByName(record, Sort_Order, Sort_By);
-            //return bool to indicate is sorted for dependencies
-        case 2:
-            //SortByPrice(record, Sort_Order, Sort_By);
-
-        case 3:
-            //SortByQuantity(record, Sort_Order, Sort_By);
-
-        }
-        break;
-
-    case 4:
+    case '4':
         GenerateProductID(record);
         break;
 
-    case 5:
+    case '5':
         Search(record);
         break;
 
-    case 6:
+    case '6':
         //import merge file
         //pass file name as parameter
         break;
-    case 7:
+    case '7':
         //duplicate check
         //confirm that is sorted
         break;
 
-    case 8:
+    case '8':
         //diagnostics
         break;
-    case 0:
+
+    case '9':
+
+        return;
+
+    case '0':
         //restart
-        break;
+        MenuController(record);
     }
 }
 void printVector(vector<Records> vector)
 {
-    cout << endl;
     if (vector[0].productID.size() != 0) {
 
-        CapacityCheck(vector);
         cout << "---Vector.size(): " << vector.size() << endl;
         cout << "-----------------------------------------" << endl;
         cout << endl << "     -ID-        -Name-       -Price-   -Qty-" << endl;
@@ -238,7 +254,6 @@ void printVector(vector<Records> vector)
     }
     else
     {
-        CapacityCheck(vector);
         cout << "---Vector.size(): " << vector.size() << endl;
         cout << "-----------------------------------------" << endl;
         cout << endl << "  -Name-       -Price-    -Qty-" << endl;
@@ -338,8 +353,6 @@ int BinarySearch(vector<Records> record, int low, int high, string ValueLookup)
                 return BinarySearch(record, mid + 1, high, ValueLookup);
         }
     }
-
-
 }
 
 string GenerateKEY(string NameToID)
@@ -537,7 +550,7 @@ void InsertElement(vector<Records>& record)
 
     bool Repeat = false;
 
-    cout << endl << "---Inserting data into database---------- " << endl << endl;
+    cout << "Inserting element into database.." << endl << endl;
     cout << "Input [name:price:quantity]" << endl << endl;
 
     //confirm string InsertName only contains characters
@@ -604,7 +617,6 @@ void InsertElement(vector<Records>& record)
         DummyElement.price = InsertPrice_Float;
         DummyElement.quantity = InsertQuantity_Int;
 
-        cout << endl;
         cout << "Inserted ["
             << DummyElement.name << ":"
             << DummyElement.price << ":"
@@ -623,12 +635,12 @@ void InsertElement(vector<Records>& record)
         if (Confirmation_Two == "Restart" || Confirmation_Two == "restart" 
             || Confirmation_Two == "R" || Confirmation_Two == "r")
         {
+            cout << endl;
             InsertElement(record);
         }
 
     }
-    
-    cout << endl;
+    MenuController(record);
     return;
  
 }
@@ -636,6 +648,7 @@ void InsertElement(vector<Records>& record)
 void SortByName(vector<Records>& record, string OrderPreference, string SortPreference)
 {
     string Repeat;
+
 
     cout << "Sort By (Ascending/Descending): ";
     cin >> OrderPreference;
@@ -649,7 +662,7 @@ void SortByName(vector<Records>& record, string OrderPreference, string SortPref
         auto stop = high_resolution_clock::now();
         auto duration = duration_cast<microseconds>(stop - start);
 
-        cout << endl << "---Sort By Name--------Ascending Order---";
+        cout << endl << "---Sort By Name: Ascending Order---------" << endl;
         printVector(record);
 
         cout << endl;
@@ -665,7 +678,7 @@ void SortByName(vector<Records>& record, string OrderPreference, string SortPref
         auto stop = high_resolution_clock::now();
         auto duration = duration_cast<microseconds>(stop - start);
 
-        cout << endl << "---Sort By Name-------Descending Order---";
+        cout << endl << "---Sort By Name: Descending Order--------" << endl;
         printVector(record);
 
         cout << endl;
@@ -689,14 +702,13 @@ void SortByName(vector<Records>& record, string OrderPreference, string SortPref
 
     if (Repeat == "Y" || Repeat == "y" || Repeat == "Yes" || Repeat == "yes")
     {
-        cout << endl << "Sort by (Name/Price/Quantity) : " << SortPreference << endl;
+        cout << endl << "Sort by (Name/Price/Quantity) : ";
+        cin >> SortPreference;
         SortByName(record, OrderPreference, SortPreference);
     }
     else
     {
-        cout << endl;
-        //MenuController(record);
-        return;
+        MenuController(record);
     }
 }
 
@@ -716,7 +728,7 @@ void SortByPrice(vector<Records>& record, string OrderPreference, string SortPre
         auto stop = high_resolution_clock::now();
         auto duration = duration_cast<microseconds>(stop - start);
 
-        cout << endl << "---Sort By Price-------Ascending Order---";
+        cout << endl << "---Sort By Price: Ascending Order--------" << endl;
         printVector(record);
 
         cout << endl;
@@ -732,7 +744,7 @@ void SortByPrice(vector<Records>& record, string OrderPreference, string SortPre
         auto stop = high_resolution_clock::now();
         auto duration = duration_cast<microseconds>(stop - start);
 
-        cout << endl << "---Sort By Price------Descending Order---";
+        cout << endl << "---Sort By Price: Descending Order-------" << endl;
         printVector(record);
 
         cout << endl;
@@ -743,6 +755,8 @@ void SortByPrice(vector<Records>& record, string OrderPreference, string SortPre
     }
     else if (OrderPreference == "Repeat" || OrderPreference == "repeat")
     {
+        cout << endl << "Sort by (Name/Price/Quantity) : ";
+        cin >> SortPreference;
         SortByPrice(record, OrderPreference, SortPreference);
     }
     else
@@ -756,13 +770,13 @@ void SortByPrice(vector<Records>& record, string OrderPreference, string SortPre
 
     if (Repeat == "Y" || Repeat == "y" || Repeat == "Yes" || Repeat == "yes")
     {
-        cout << endl << "Sort by (Name/Price/Quantity) : " << SortPreference << endl;
+        cout << endl << "Sort by (Name/Price/Quantity) : ";
+        cin >> SortPreference;
         SortByPrice(record, OrderPreference, SortPreference);
     }
     else
     {
-        cout << endl;
-        //MenuController(record);
+        MenuController(record);
     }
 }
 
@@ -782,7 +796,8 @@ void SortByQuantity(vector<Records>& record, string OrderPreference, string Sort
         auto stop = high_resolution_clock::now();
         auto duration = duration_cast<microseconds>(stop - start);
 
-        cout << endl << "---Sort By Quantity----Ascending Order---";
+        cout << endl << "---Sort By Quantity: Ascending Order-----";
+
         printVector(record);
 
         cout << endl;
@@ -798,7 +813,7 @@ void SortByQuantity(vector<Records>& record, string OrderPreference, string Sort
         auto stop = high_resolution_clock::now();
         auto duration = duration_cast<microseconds>(stop - start);
 
-        cout << endl << "---Sort By Quantity---Descending Order---";
+        cout << endl << "---Sort By Quantity: Descending Order----";
         printVector(record);
 
         cout << endl;
@@ -822,13 +837,13 @@ void SortByQuantity(vector<Records>& record, string OrderPreference, string Sort
 
     if (Repeat == "Y" || Repeat == "y" || Repeat == "Yes" || Repeat == "yes")
     {
-        cout << endl << "Sort by (Name/Price/Quantity) : " << SortPreference << endl;
+        cout << endl << "Sort by (Name/Price/Quantity) : ";
+        cin >> SortPreference;
         SortByQuantity(record, OrderPreference, SortPreference);
     }
     else
     {
-        cout << endl;
-        //MenuController(record);
+        MenuController(record);
     }
 }
 
