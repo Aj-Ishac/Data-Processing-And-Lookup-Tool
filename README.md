@@ -3,7 +3,7 @@ C++ based project built to compile data fed to the program to process, sort, and
 
 What the project does:
 
-Imports base file into a vector of data structs
+Imports base file into a vector of data structs  
 Print Records  
 Element: Insert/Modify/Remove  
 Sort By: Name/Price/Quantity  
