@@ -9,5 +9,5 @@ Element: Insert/Modify/Remove
 Sort By: Name/Price/Quantity  
 Generate Product ID  
 Search Element  
-Import and Merge File  
+Import and Merge into Base File  
 Check for Duplicates  
