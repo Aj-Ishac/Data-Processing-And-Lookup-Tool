@@ -37,6 +37,7 @@ int BinarySearch(vector<Records>, int, int, string);
 bool isdigitCheck(string);
 bool isalphaCheck(string);
 void CapacityCheck(vector<Records>);
+bool isSortedCheck(vector<Records> record);
 
 void GenerateProductID(vector<Records>&);
 string GenerateKEY(string);
@@ -76,9 +77,7 @@ int main()
     //this is a test of prints
     
     //NEXT
-    //put sorts back to how they were.
-    //no need to have cins outside if we return bool to know if sorted or not
-    //menu rework - implement back feature
+    //figuring out how to play out bool isSortedforBS
     //pass file name as parameter for ImportFile()
     //guarantee a/d sort if calling binary search or remove duplicates
     //figure out how to add two letters to ID
@@ -116,7 +115,7 @@ int main()
 void printMainMenu()
 {   
     cout << endl;
-    cout << "Beginning of the Menu Controller" << endl;
+    cout << "    Beginning of the Menu Controller" << endl;
     cout << "-----------------------------------------" << endl;
     cout << " 1. Print Records" << endl;
     cout << " 2. Sort By: Name/Price/Quantity" << endl;
@@ -136,104 +135,150 @@ void printMainMenu()
 
 void MenuController(vector<Records>& record)
 {
-    bool Repeat = false;
+    bool Repeat = true;
+    bool isSorted = false;
     string Sort_Preference, Sort_Order;
 
     char choice;
-    printMainMenu();
-    cin >> choice;
-
-    switch (choice)
-    {
-    case '1': //pass
     
-        cout << "Printing Records.." << endl << endl;
-        printVector(record);
-        MenuController(record);
+    do {
 
-    case '2':
-        //pass
-        cout << endl;
-        cout << " 1. Sort by Name" << endl;
-        cout << " 2. Sort by Price" << endl;
-        cout << " 3. Sort by Quantity" << endl << endl;
-
-        cout << "Input choice (1-3): ";
+        printMainMenu();
         cin >> choice;
 
         switch (choice)
         {
         case '1':
-            SortByName(record, Sort_Order, Sort_Preference);
-            //return bool to indicate is sorted for dependencies
 
-            return;
+            cout << "Printing Records.." << endl << endl;
+            printVector(record);
+            break;
 
         case '2':
+            cout << endl;
+            cout << " 1. Sort by Name" << endl;
+            cout << " 2. Sort by Price" << endl;
+            cout << " 3. Sort by Quantity" << endl << endl;
 
-            SortByPrice(record, Sort_Order, Sort_Preference);
-            return;
+            cout << "Input choice (1-3): ";
+            cin >> choice;
+
+            switch (choice)
+            {
+            case '1':
+                //sortbyname: pass
+                SortByName(record, Sort_Order, Sort_Preference);
+                isSorted = true;
+                break;
+
+            case '2':
+                //sortbyprice: pass 
+                SortByPrice(record, Sort_Order, Sort_Preference);
+                isSorted = false;
+                break;
+
+            case '3':
+                //sortbyqty: pass
+                SortByQuantity(record, Sort_Order, Sort_Preference);
+                isSorted = false;
+                break;
+            }
+            break;
 
         case '3':
 
-            SortByQuantity(record, Sort_Order, Sort_Preference);
+            cout << endl;
+            cout << " 1. Insert Element" << endl;
+            cout << " 2. Modify Element" << endl;
+            cout << " 3. Remove Element" << endl << endl;
+
+            cout << "Input choice (1-3): ";
+            cin >> choice;
+
+            switch (choice)
+            {
+            case '1':
+                //insertelement: pass
+                InsertElement(record);
+                isSorted = false;
+                break;
+
+            case '2':
+                //modifyelement: pass
+                if (isSorted == 0)
+                {
+                    cout << endl << "Function requires records to be sorted by name!" << endl;
+                    isSorted = false;
+                    break;
+                }
+
+                ModifyElement(record);
+                isSorted = false;
+                break;
+
+            case '3':
+                //removelement: pass
+                if (isSorted == 0)
+                {
+                    cout << endl << "Function requires records to be sorted by name!" << endl;
+                    isSorted = false;
+                    break;
+                }
+
+                RemoveElement(record);
+                break;
+            }
+            break;
+
+        case '4':
+            //generateid: pass
+            GenerateProductID(record);            
+            break;
+
+        case '5':
+            //search: pass
+            if (isSorted == 0)
+            {
+                cout << endl << "Function requires records to be sorted by name!" << endl;
+                isSorted = false;
+                break;
+            }
+
+            Search(record);
+            break;
+        
+        case '6':
+            //import&merge file: pass
+
+            ImportFile(record);
+            break;
+        
+        case '7':
+            //duplicate check: pass
+            if (isSorted == 0)
+            {
+                cout << endl << "Function requires records to be sorted by name!" << endl;
+                isSorted = false;
+                break;
+            }
+
+            removeDuplicates(record);
+            break;
+
+        case '8':
+            //diagnostics: later
+            break;
+
+        case '9':
+            //quit:pass
             return;
 
-        }
-
-    case '3': 
-        //modify and remove needs sort to be in place
-        //insert is done
-        cout << endl;
-        cout << " 1. Insert Element" << endl;
-        cout << " 2. Modify Element" << endl;
-        cout << " 3. Remove Element" << endl << endl;
-
-        cout << "Input choice (1-3): ";
-        cin >> choice;
-
-        switch (choice)
-        {
-        case '1':
-            InsertElement(record);
-            return;
-        case '2':
-            ModifyElement(record);
-            break;
-        case '3':
-            RemoveElement(record);
+        case '0':
+            //restart:pass
             break;
         }
 
-    case '4':
-        GenerateProductID(record);
-        break;
-
-    case '5':
-        Search(record);
-        break;
-
-    case '6':
-        //import merge file
-        //pass file name as parameter
-        break;
-    case '7':
-        //duplicate check
-        //confirm that is sorted
-        break;
-
-    case '8':
-        //diagnostics
-        break;
-
-    case '9':
-
-        return;
-
-    case '0':
-        //restart
-        MenuController(record);
-    }
+    }while (Repeat);
 }
 void printVector(vector<Records> vector)
 {
@@ -270,27 +315,32 @@ void printVector(vector<Records> vector)
 
 void MergeVectors(vector<Records>& vector1, vector<Records> vector2)
 {
-    cout << endl << "Merging the two vectors..."<< endl;
+    cout << endl << "Merging the two data tables.." << endl << endl;
     vector1.reserve(vector1.size() + vector2.size());
     vector1.insert(vector1.end(), vector2.begin(), vector2.end());
 
+    cout << "---Merged Data Table" << endl;
     printVector(vector1);
 }
 
 void ImportFile(vector<Records>& record)
 {
     vector<Records> tempVector;
+    string filename;
 
-    ifstream inFile("3rdpartyimport.txt");
+    cout << endl << "Import (filename.txt): ";
+    cin >> filename;
+        
+    ifstream inFile;
+    inFile.open(filename);
+    cout << endl;
 
-    if (!inFile)
+    if (!inFile.is_open())
     {
         cerr << "File cannot be opened. " << endl;
-        system("PAUSE");
-        exit(1);
+        return;
     }
     
-    //cplusplus.com/forum/beginner/99799/
     string templine;
     while (getline(inFile, templine))
     {
@@ -303,22 +353,35 @@ void ImportFile(vector<Records>& record)
         tempVector.push_back(tempV);
     }
 
-    MergeVectors(record, tempVector);
-    cout << "----------------------------------------" << endl;
+    cout << "---Imported Data Table" << endl;
     printVector(tempVector);
+
+    MergeVectors(record, tempVector);
+    cout << "-----------------------------------------" << endl;
+
     
     tempVector.clear();
     tempVector.shrink_to_fit();
+
+    return;
 }
 
 void Search(vector<Records> record)
 {
     string ValueLookup;
-    cout << endl << endl << "Input Name to search: " << ValueLookup;
+    cout << endl << "Search Name: ";
     cin >> ValueLookup;
 
     int index = BinarySearch(record, 0, record.size(), ValueLookup);
-    cout << ValueLookup << " index: " << index << endl << endl;
+
+    if(index > -1)
+    {
+        cout << "Index of " << index << ": ["
+            << record[index].name << ":"
+            << record[index].price << ":"
+            << record[index].quantity << "] " << endl;
+
+    }
 }
 
 int BinarySearch(vector<Records> record, int low, int high, string ValueLookup)
@@ -353,6 +416,9 @@ int BinarySearch(vector<Records> record, int low, int high, string ValueLookup)
                 return BinarySearch(record, mid + 1, high, ValueLookup);
         }
     }
+
+    cout << "Failed to find input. " << endl;
+    return -1;
 }
 
 string GenerateKEY(string NameToID)
@@ -360,7 +426,8 @@ string GenerateKEY(string NameToID)
     string EncodedID;
     int CharsToEncode_Above4[5];
     int CharsToEncode_Below4[3];
-    int DashCounter = 0;
+    int DashCounterFront = 0;
+    int DashCounterBack = 0;
 
     //defining characters extracted to be used as ID
     //0, 1, (length()/2), (length-1) , (length-2)
@@ -388,27 +455,26 @@ string GenerateKEY(string NameToID)
     //decode: int [(((38-50)+10)*2)+1] -> string
     //A-Z -> (65-90)
 
-    cout << "NameToID: " << NameToID.size() << endl;
-
-        for (int j = 0; j < 5; j++)
+    for (int j = 0; j < 5; j++)
+    {
+        if (CharsToEncode_Above4[j] % 2 == 0)
         {
-            if (CharsToEncode_Above4[j] % 2 == 0)
-            {
-                CharsToEncode_Above4[j] = ((CharsToEncode_Above4[j] / 2) + 3);
-            }
-            else
-            {
-                CharsToEncode_Above4[j] = ((CharsToEncode_Above4[j] / 2) - 10);
-            }
-            if (DashCounter == 2)
-            {
-                EncodedID += "-";
-                DashCounter = 0;
-            }
-            DashCounter++;
-            EncodedID += to_string(CharsToEncode_Above4[j]);
+            CharsToEncode_Above4[j] = ((CharsToEncode_Above4[j] / 2) + 3);
         }
-    
+        else
+        {
+            CharsToEncode_Above4[j] = ((CharsToEncode_Above4[j] / 2) - 10);
+        }
+        if (DashCounterFront == 2)
+        {
+            EncodedID += "-";
+            DashCounterFront = 0;
+
+        }
+        DashCounterFront++;
+        EncodedID += to_string(CharsToEncode_Above4[j]);
+    }
+
     return EncodedID;
 }
 
@@ -427,29 +493,34 @@ void RemoveElement(vector<Records>& record)
     string ElementToRemove;
     int index;
 
-    cout << " Element to remove: " << ElementToRemove;
+    cout << endl << "Element to remove: ";
+    cin >> ElementToRemove;
 
     index = BinarySearch(record, 0, record.size(), ElementToRemove);
 
-    cout << endl;
-    cout << "Confirm ["
-        << record[index].name << ":"
-        << record[index].price << ":"
-        << record[index].quantity << "] to remove? (Y/N): ";
-
-    cin >> Confirmation;
-
-    if ((Confirmation == "Y" || Confirmation == "y" 
-        || Confirmation == "Yes" || Confirmation == "yes"))
+    if(index > -1)
     {
-
-        cout << endl << " ["
+        cout << endl;
+        cout << "Confirm ["
             << record[index].name << ":"
             << record[index].price << ":"
-            << record[index].quantity << "] at index " << index << " has been removed." << endl << endl;
+            << record[index].quantity << "] to remove? (Y/N): ";
 
-        record.erase(record.begin() + (index));
+        cin >> Confirmation;
+
+        if ((Confirmation == "Y" || Confirmation == "y"
+            || Confirmation == "Yes" || Confirmation == "yes"))
+        {
+
+            cout << endl << " ["
+                << record[index].name << ":"
+                << record[index].price << ":"
+                << record[index].quantity << "] at index " << index << " has been removed." << endl << endl;
+
+            record.erase(record.begin() + (index));
+        }
     }
+    return;
 }
 
 void ModifyElement(vector<Records>& record)
@@ -470,71 +541,76 @@ void ModifyElement(vector<Records>& record)
 
     index = BinarySearch(record, 0, record.size(), ElementToModify);
 
-    cout << endl << "Modifying ["
-        << record[index].name << ":"
-        << record[index].price << ":"
-        << record[index].quantity << "] at index " << index << "." << endl;
-
-    do {
-
-        Repeat = false;
-
-        cout << "Input Name: ";
-        cin >> InsertName;
-
-        Repeat = isdigitCheck(InsertName);
-
-    } while (Repeat);
-
-    do {
-
-        Repeat = false;
-
-        cout << "Input Price: ";
-        cin >> InsertPrice;
-
-        Repeat = isalphaCheck(InsertPrice);
-
-    } while (Repeat);
-    float InsertPrice_Float = stof(InsertPrice);
-
-    do {
-
-        Repeat = false;
-
-        cout << "Input Quantity: ";
-        cin >> InsertQuantity;
-
-        Repeat = isalphaCheck(InsertQuantity);
-
-    } while (Repeat);
-    int InsertQuantity_Int = stof(InsertQuantity);
-
-    cout << endl;
-    cout << "Confirm ["
-        << record[index].name << ":"
-        << record[index].price << ":"
-        << record[index].quantity << "]? (Y/N): ";
-
-    cin >> Confirmation;
-
-    if ((Confirmation == "Y" || Confirmation == "y" || Confirmation == "Yes" || Confirmation == "yes"))
+    if (index > -1)
     {
-        cout << endl;
-        cout << " ["
+        cout << endl << "Modifying ["
             << record[index].name << ":"
             << record[index].price << ":"
-            << record[index].quantity << "] has been modified to ["
-            << InsertName << ":"
-            << InsertPrice_Float << ":"
-            << InsertQuantity_Int << "] "
-            << endl << endl;
+            << record[index].quantity << "] at index " << index << "." << endl;
 
-        record[index].name = InsertName;
-        record[index].price = InsertPrice_Float;
-        record[index].quantity = InsertQuantity_Int;
+        do {
 
+            Repeat = false;
+
+            cout << "Input Name: ";
+            cin >> InsertName;
+
+            Repeat = isdigitCheck(InsertName);
+
+        } while (Repeat);
+
+        do {
+
+            Repeat = false;
+
+            cout << "Input Price: ";
+            cin >> InsertPrice;
+
+            Repeat = isalphaCheck(InsertPrice);
+
+        } while (Repeat);
+        float InsertPrice_Float = stof(InsertPrice);
+
+        do {
+
+            Repeat = false;
+
+            cout << "Input Quantity: ";
+            cin >> InsertQuantity;
+
+            Repeat = isalphaCheck(InsertQuantity);
+
+        } while (Repeat);
+        int InsertQuantity_Int = stof(InsertQuantity);
+
+        cout << endl;
+        cout << "Confirm ["
+            << record[index].name << ":"
+            << record[index].price << ":"
+            << record[index].quantity << "]? (Y/N): ";
+
+        cin >> Confirmation;
+
+        if ((Confirmation == "Y" || Confirmation == "y" || Confirmation == "Yes" || Confirmation == "yes"))
+        {
+            cout << endl;
+            cout << " ["
+                << record[index].name << ":"
+                << record[index].price << ":"
+                << record[index].quantity << "] has been modified to ["
+                << InsertName << ":"
+                << InsertPrice_Float << ":"
+                << InsertQuantity_Int << "] "
+                << endl << endl;
+
+            record[index].name = InsertName;
+            record[index].price = InsertPrice_Float;
+            record[index].quantity = InsertQuantity_Int;
+
+        }
     }
+    return;
+    
 }
 
 void InsertElement(vector<Records>& record)
@@ -627,28 +703,12 @@ void InsertElement(vector<Records>& record)
         record.push_back(DummyElement);
 
     }
-    else
-    {
-        cout << "Restart/Quit?: ";
-        cin >> Confirmation_Two;
-
-        if (Confirmation_Two == "Restart" || Confirmation_Two == "restart" 
-            || Confirmation_Two == "R" || Confirmation_Two == "r")
-        {
-            cout << endl;
-            InsertElement(record);
-        }
-
-    }
-    MenuController(record);
     return;
- 
 }
 
 void SortByName(vector<Records>& record, string OrderPreference, string SortPreference)
 {
     string Repeat;
-
 
     cout << "Sort By (Ascending/Descending): ";
     cin >> OrderPreference;
@@ -669,6 +729,7 @@ void SortByName(vector<Records>& record, string OrderPreference, string SortPref
         cout << "---Time complexity : O(nlogn)" << endl;
         cout << "---Function runtime: ";
         cout << duration.count() << "ms" << endl;
+        return;
 
     }
     else if (OrderPreference == "Descending" || OrderPreference == "descending") {
@@ -685,31 +746,15 @@ void SortByName(vector<Records>& record, string OrderPreference, string SortPref
         cout << "---Time complexity : O(nlogn)" << endl;
         cout << "---Function runtime: ";
         cout << duration.count() << "ms" << endl;
+        return;
 
-    }
-    else if (OrderPreference == "Repeat" || OrderPreference == "repeat")
-    {
-        SortByName(record, OrderPreference, SortPreference);
     }
     else
     {
-        cout << endl << "Invalid input. Try again! " << endl;
-        SortByName(record, OrderPreference, SortPreference);
+        cout << "Invalid input. " << endl;
+        return;
     }
 
-    cout << endl << "Repeat? (Y/N): ";
-    cin >> Repeat;
-
-    if (Repeat == "Y" || Repeat == "y" || Repeat == "Yes" || Repeat == "yes")
-    {
-        cout << endl << "Sort by (Name/Price/Quantity) : ";
-        cin >> SortPreference;
-        SortByName(record, OrderPreference, SortPreference);
-    }
-    else
-    {
-        MenuController(record);
-    }
 }
 
 void SortByPrice(vector<Records>& record, string OrderPreference, string SortPreference)
@@ -736,6 +781,9 @@ void SortByPrice(vector<Records>& record, string OrderPreference, string SortPre
         cout << "---Function runtime: ";
         cout << duration.count() << "ms" << endl;
 
+        return;
+
+
     }
     else if (OrderPreference == "Descending" || OrderPreference == "descending") {
         sort(record.begin(), record.end(), [](Records a, Records b)
@@ -752,32 +800,15 @@ void SortByPrice(vector<Records>& record, string OrderPreference, string SortPre
         cout << "---Function runtime: ";
         cout << duration.count() << "ms" << endl;
 
-    }
-    else if (OrderPreference == "Repeat" || OrderPreference == "repeat")
-    {
-        cout << endl << "Sort by (Name/Price/Quantity) : ";
-        cin >> SortPreference;
-        SortByPrice(record, OrderPreference, SortPreference);
+        return;
+
     }
     else
     {
-        cout << endl << "Invalid input. Try again! " << endl;
-        SortByPrice(record, OrderPreference, SortPreference);
+        cout << "Invalid input. " << endl;
+        return;
     }
 
-    cout << endl << "Repeat? (Y/N): ";
-    cin >> Repeat;
-
-    if (Repeat == "Y" || Repeat == "y" || Repeat == "Yes" || Repeat == "yes")
-    {
-        cout << endl << "Sort by (Name/Price/Quantity) : ";
-        cin >> SortPreference;
-        SortByPrice(record, OrderPreference, SortPreference);
-    }
-    else
-    {
-        MenuController(record);
-    }
 }
 
 void SortByQuantity(vector<Records>& record, string OrderPreference, string SortPreference)
@@ -805,6 +836,8 @@ void SortByQuantity(vector<Records>& record, string OrderPreference, string Sort
         cout << "---Function runtime: ";
         cout << duration.count() << "ms" << endl;
 
+        return;
+
     }
     else if (OrderPreference == "Descending" || OrderPreference == "descending") {
         sort(record.begin(), record.end(), [](Records a, Records b)
@@ -821,30 +854,15 @@ void SortByQuantity(vector<Records>& record, string OrderPreference, string Sort
         cout << "---Function runtime: ";
         cout << duration.count() << "ms" << endl;
 
-    }
-    else if (OrderPreference == "Repeat" || OrderPreference == "repeat")
-    {
-        SortByQuantity(record, OrderPreference, SortPreference);
+        return;
+
     }
     else
     {
-        cout << endl << "Invalid input. Try again! " << endl;
-        SortByQuantity(record, OrderPreference, SortPreference);
+        cout << "Invalid input. " << endl;
+        return;
     }
 
-    cout << endl << "Repeat? (Y/N): ";
-    cin >> Repeat;
-
-    if (Repeat == "Y" || Repeat == "y" || Repeat == "Yes" || Repeat == "yes")
-    {
-        cout << endl << "Sort by (Name/Price/Quantity) : ";
-        cin >> SortPreference;
-        SortByQuantity(record, OrderPreference, SortPreference);
-    }
-    else
-    {
-        MenuController(record);
-    }
 }
 
 bool isdigitCheck(string InputToCheck)
@@ -899,12 +917,13 @@ void removeDuplicates(vector<Records>& record)
 
     int previous = 0;
     int detected_dupes = 0;
-
+    
+    cout << endl;
     for (int current = 1; current < record.size(); current++)
     {
         if (record[current].name == record[previous].name)
         {
-            cout << " index " << current << ": " << record[current].name << endl;
+            cout << "index " << current << ": " << record[current].name << endl;
             record.erase(record.begin() + current);
             detected_dupes++;
         }
@@ -913,17 +932,47 @@ void removeDuplicates(vector<Records>& record)
 
     if (detected_dupes == 0)
     {
-        cout << " No duplicates detected." << endl;
+        cout << endl << "No duplicates detected." << endl;
     }
     else
     {
-        cout << " has been removed and excess memory has been released. " << endl;
+        cout << "has been removed and excess memory has been released. " << endl;
     }
 
     record.shrink_to_fit();
     return;
 }
 
+bool isSortedCheck(vector<Records> record)
+{
+
+    if(record.size() == 0 || record.size() == 1)
+        return true;
+
+    //for ascending order name sort case
+    if(record[0].name < record[1].name)
+    {
+        for (int i = 2; i < record.size(); i++)
+        {
+            if (record[i - 1].name > record[i].name)
+            {
+                return false;
+            }
+        }
+    }
+    else
+    {
+        for (int i = 2; i < record.size(); i++)
+        {
+            if (record[i - 1].name < record[i].name)
+            {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
 //bug:
 //warning dept building up
 //replace dowhile with while(repeat = 1)
