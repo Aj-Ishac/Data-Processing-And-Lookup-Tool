@@ -73,38 +73,33 @@ int main()
 
         record.push_back(tempV);
     }
-
-    //this is a test of prints
     
     //NEXT
-    //figuring out how to play out bool isSortedforBS
+    //switch input: only take first letter or fix multichar input
+    
+    //sort funcs with wrong input breaks func without sorting
+    //sorted bool still marking as true even though it is not sorted
+    //breaking other sort dependent funcs  
+    //solution: force restart in the sort funcs to stay in function till completed
+     
     //pass file name as parameter for ImportFile()
-    //guarantee a/d sort if calling binary search or remove duplicates
-    //figure out how to add two letters to ID
-    //consistency on input output (case being element funcs)
+    
     //when importing. configure a system to match string to name, float to price, int to qty
+    
     //output into basefile
+
+    //warning dept cleanup
+
+    //more specifics on what to remove with removeduplicate func
+
+    //output final result to new file
+
+    //clean.console cleanup
+
     cout << "---Base data from file-------------------" << endl;
     printVector(record);
     bool isSortedforBS = false;
     MenuController(record);
-
-    //ModifyElement(record);
-    //InsertElement(record);
-
-    //SortByName(record, OrderPreference, SortPreference);
-    //SortByPrice(record, OrderPreference, SortPreference);
-    //SortByQuantity(record, OrderPreference, SortPreference);
-
-    //Search(record);
-    //ImportFile(record);
-    //RemoveElement(record);
-    
-    //ImportFile(record);
-    //MenuController(record);
-
-    //removeDuplicates(record);
-    //GenerateProductID(record);
 
     inFile.close();
     return 0;
@@ -149,7 +144,7 @@ void MenuController(vector<Records>& record)
         switch (choice)
         {
         case '1':
-
+            //printtable: pass
             cout << "Printing Records.." << endl << endl;
             printVector(record);
             break;
@@ -208,7 +203,6 @@ void MenuController(vector<Records>& record)
                 if (isSorted == 0)
                 {
                     cout << endl << "Function requires records to be sorted by name!" << endl;
-                    isSorted = false;
                     break;
                 }
 
@@ -221,7 +215,6 @@ void MenuController(vector<Records>& record)
                 if (isSorted == 0)
                 {
                     cout << endl << "Function requires records to be sorted by name!" << endl;
-                    isSorted = false;
                     break;
                 }
 
@@ -240,7 +233,6 @@ void MenuController(vector<Records>& record)
             if (isSorted == 0)
             {
                 cout << endl << "Function requires records to be sorted by name!" << endl;
-                isSorted = false;
                 break;
             }
 
@@ -258,7 +250,6 @@ void MenuController(vector<Records>& record)
             if (isSorted == 0)
             {
                 cout << endl << "Function requires records to be sorted by name!" << endl;
-                isSorted = false;
                 break;
             }
 
@@ -359,7 +350,7 @@ void ImportFile(vector<Records>& record)
     MergeVectors(record, tempVector);
     cout << "-----------------------------------------" << endl;
 
-    
+    inFile.close();    
     tempVector.clear();
     tempVector.shrink_to_fit();
 
@@ -973,23 +964,3 @@ bool isSortedCheck(vector<Records> record)
 
     return true;
 }
-//bug:
-//warning dept building up
-//replace dowhile with while(repeat = 1)
-//dowhile is exitcontrol loop, while is entry control loop
-//before any binary search parent func, make sure vec is sorted else possble crashes
-//find a way to put sorting preference outside to use as reference for funcs that rely on bsearch parent funcs
-//pass parameter with sort preference to call for specific sort with preference before bsearch if not already sorted
-//insertelement at the very bottom needs adjusting with paramter in restart statement missing
-//sort funcs need parameter cleanup
-
-//progress:   
-//remove O(1)
-//search ID/Name
-//edit value - constructor based O(1)
-//verify capacity
-//https://www.codesdope.com/cpp-stdvector/
-//bulk import data from second file
-//output to new file
-//menucontroller needs major work. move bulk from funcs like sortx to menucontroller, cleanup general funcs (hint: unneeded parameters)
-//detect duplicates in name and verify with user on action to take
