@@ -21,7 +21,7 @@ struct Records {
 
 void printVector(vector<Records>);
 void MenuController(vector<Records>&);
-void printMainMenu();
+void printMainMenu(vector<Records>);
 
 void SortByName(vector<Records>&, string, string);
 void SortByPrice(vector<Records>&, string, string);
@@ -94,7 +94,7 @@ int main()
 
     //output final result to new file
 
-    //clean.console cleanup
+    //implement history sequence. array[5] to print at the top of every clearscr
 
     cout << "---Base data from file-------------------" << endl;
     printVector(record);
@@ -107,8 +107,9 @@ int main()
 //https://docs.github.com/en/get-started/quickstart/hello-world
 //print, sort(name, price, qty), insert, modify, remove, generateproductid, importvectors
 //(make sure is sorted) search, remove dupes, 
-void printMainMenu()
+void printMainMenu(vector<Records> record)
 {   
+
     cout << endl;
     cout << "    Beginning of the Menu Controller" << endl;
     cout << "-----------------------------------------" << endl;
@@ -138,14 +139,15 @@ void MenuController(vector<Records>& record)
     
     do {
 
-        printMainMenu();
+        printMainMenu(record);
         cin >> choice;
 
         switch (choice)
         {
         case '1':
-            //printtable: pass
-            cout << "Printing Records.." << endl << endl;
+            //printtable: pass1, pass2
+            system("cls");
+            cout << "---Printing Records." << endl;
             printVector(record);
             break;
 
@@ -161,19 +163,19 @@ void MenuController(vector<Records>& record)
             switch (choice)
             {
             case '1':
-                //sortbyname: pass
+                //sortbyname: pass1, pass2
                 SortByName(record, Sort_Order, Sort_Preference);
                 isSorted = true;
                 break;
 
             case '2':
-                //sortbyprice: pass 
+                //sortbyprice: pass1, pass2 
                 SortByPrice(record, Sort_Order, Sort_Preference);
                 isSorted = false;
                 break;
 
             case '3':
-                //sortbyqty: pass
+                //sortbyqty: pass1, pass2
                 SortByQuantity(record, Sort_Order, Sort_Preference);
                 isSorted = false;
                 break;
@@ -193,16 +195,18 @@ void MenuController(vector<Records>& record)
             switch (choice)
             {
             case '1':
-                //insertelement: pass
+                //insertelement: pass1, pass2
                 InsertElement(record);
                 isSorted = false;
                 break;
 
             case '2':
-                //modifyelement: pass
+                //modifyelement: pass1, pass2
                 if (isSorted == 0)
                 {
-                    cout << endl << "Function requires records to be sorted by name!" << endl;
+                    system("cls");
+                    cout << "---Function requires records to be sorted by name!" << endl;
+                    printVector(record);
                     break;
                 }
 
@@ -211,10 +215,12 @@ void MenuController(vector<Records>& record)
                 break;
 
             case '3':
-                //removelement: pass
+                //removelement: pass1, pass2
                 if (isSorted == 0)
                 {
-                    cout << endl << "Function requires records to be sorted by name!" << endl;
+                    system("cls");
+                    cout << "---Function requires records to be sorted by name!" << endl;
+                    printVector(record);
                     break;
                 }
 
@@ -224,15 +230,17 @@ void MenuController(vector<Records>& record)
             break;
 
         case '4':
-            //generateid: pass
+            //generateid: pass1, pass2
             GenerateProductID(record);            
             break;
 
         case '5':
-            //search: pass
+            //search: pass1, pass2
             if (isSorted == 0)
             {
-                cout << endl << "Function requires records to be sorted by name!" << endl;
+                system("cls");
+                cout << "---Function requires records to be sorted by name!" << endl;
+                printVector(record);
                 break;
             }
 
@@ -240,16 +248,19 @@ void MenuController(vector<Records>& record)
             break;
         
         case '6':
-            //import&merge file: pass
+            //import&merge file: pass1, pass2
 
             ImportFile(record);
+            isSorted = false;
             break;
         
         case '7':
-            //duplicate check: pass
+            //duplicate check: pass1, pass2
             if (isSorted == 0)
             {
-                cout << endl << "Function requires records to be sorted by name!" << endl;
+                system("cls");
+                cout << "---Function requires records to be sorted by name!" << endl;
+                printVector(record);
                 break;
             }
 
@@ -266,6 +277,8 @@ void MenuController(vector<Records>& record)
 
         case '0':
             //restart:pass
+            system("cls");
+            printVector(record);
             break;
         }
 
@@ -306,11 +319,11 @@ void printVector(vector<Records> vector)
 
 void MergeVectors(vector<Records>& vector1, vector<Records> vector2)
 {
-    cout << endl << "Merging the two data tables.." << endl << endl;
+    //reserve memory for vector merge and insert vector2 at the back of vector1
     vector1.reserve(vector1.size() + vector2.size());
     vector1.insert(vector1.end(), vector2.begin(), vector2.end());
 
-    cout << "---Merged Data Table" << endl;
+    cout << endl << "---Merged Data Table" << endl;
     printVector(vector1);
 }
 
@@ -322,13 +335,16 @@ void ImportFile(vector<Records>& record)
     cout << endl << "Import (filename.txt): ";
     cin >> filename;
         
+    system("cls");
+    //printVector(record);
+
     ifstream inFile;
     inFile.open(filename);
-    cout << endl;
 
     if (!inFile.is_open())
     {
-        cerr << "File cannot be opened. " << endl;
+        cerr << "---File cannot be opened. " << endl;
+        printVector(record);
         return;
     }
     
@@ -363,14 +379,20 @@ void Search(vector<Records> record)
     cout << endl << "Search Name: ";
     cin >> ValueLookup;
 
+
+
     int index = BinarySearch(record, 0, record.size(), ValueLookup);
 
     if(index > -1)
     {
-        cout << "Index of " << index << ": ["
+
+        system("cls");
+        cout << "---Index of " << index << ": ["
             << record[index].name << ":"
             << record[index].price << ":"
             << record[index].quantity << "] " << endl;
+        printVector(record);
+        
 
     }
 }
@@ -408,7 +430,9 @@ int BinarySearch(vector<Records> record, int low, int high, string ValueLookup)
         }
     }
 
-    cout << "Failed to find input. " << endl;
+    system("cls");
+    cout << "---Failed to find input. " << endl;
+    printVector(record);
     return -1;
 }
 
@@ -471,11 +495,15 @@ string GenerateKEY(string NameToID)
 
 void GenerateProductID(vector<Records>& record)
 {
-    cout << endl << "Generating product ID on record items..." << endl << endl;
+
     for (int i = 0; i < (int)record.size(); i++)
     {
         record[i].productID = GenerateKEY(record[i].name);
     }
+
+    system("cls");
+    cout << "---Generating product ID on record items." << endl;
+    printVector(record);
 }
 
 void RemoveElement(vector<Records>& record)
@@ -502,15 +530,22 @@ void RemoveElement(vector<Records>& record)
         if ((Confirmation == "Y" || Confirmation == "y"
             || Confirmation == "Yes" || Confirmation == "yes"))
         {
+            record.erase(record.begin() + (index));
 
-            cout << endl << " ["
+            system("cls");
+
+            cout << "---Removed ["
                 << record[index].name << ":"
                 << record[index].price << ":"
-                << record[index].quantity << "] at index " << index << " has been removed." << endl << endl;
+                << record[index].quantity << "] at index " 
+                << index << "." << endl;
 
-            record.erase(record.begin() + (index));
+            printVector(record);
+            return;
         }
     }
+    system("cls");
+    printVector(record);
     return;
 }
 
@@ -584,24 +619,31 @@ void ModifyElement(vector<Records>& record)
 
         if ((Confirmation == "Y" || Confirmation == "y" || Confirmation == "Yes" || Confirmation == "yes"))
         {
-            cout << endl;
-            cout << " ["
-                << record[index].name << ":"
-                << record[index].price << ":"
-                << record[index].quantity << "] has been modified to ["
-                << InsertName << ":"
-                << InsertPrice_Float << ":"
-                << InsertQuantity_Int << "] "
-                << endl << endl;
 
             record[index].name = InsertName;
             record[index].price = InsertPrice_Float;
             record[index].quantity = InsertQuantity_Int;
 
+            system("cls");
+
+                cout << "---Modified ["
+                << record[index].name << ":"
+                << record[index].price << ":"
+                << record[index].quantity << "] to ["
+                << InsertName << ":"
+                << InsertPrice_Float << ":"
+                << InsertQuantity_Int << "] "
+                << endl;
+
+            printVector(record);
+            return;
+
         }
     }
+
+    system("cls");
+    printVector(record);
     return;
-    
 }
 
 void InsertElement(vector<Records>& record)
@@ -684,16 +726,22 @@ void InsertElement(vector<Records>& record)
         DummyElement.price = InsertPrice_Float;
         DummyElement.quantity = InsertQuantity_Int;
 
-        cout << "Inserted ["
-            << DummyElement.name << ":"
-            << DummyElement.price << ":"
-            << DummyElement.quantity << "]";
-
-        cout << endl << endl;
 
         record.push_back(DummyElement);
 
+        system("cls");
+
+        cout << "---Inserted ["
+            << DummyElement.name << ":"
+            << DummyElement.price << ":"
+            << DummyElement.quantity << "]" << endl;
+
+        printVector(record);
+        return;
     }
+
+    system("cls");
+    printVector(record);
     return;
 }
 
@@ -703,6 +751,7 @@ void SortByName(vector<Records>& record, string OrderPreference, string SortPref
 
     cout << "Sort By (Ascending/Descending): ";
     cin >> OrderPreference;
+    system("cls");
 
     auto start = high_resolution_clock::now();
 
@@ -713,7 +762,7 @@ void SortByName(vector<Records>& record, string OrderPreference, string SortPref
         auto stop = high_resolution_clock::now();
         auto duration = duration_cast<microseconds>(stop - start);
 
-        cout << endl << "---Sort By Name: Ascending Order---------" << endl;
+        cout << "---Sort By Name: Ascending Order---------" << endl;
         printVector(record);
 
         cout << endl;
@@ -730,7 +779,7 @@ void SortByName(vector<Records>& record, string OrderPreference, string SortPref
         auto stop = high_resolution_clock::now();
         auto duration = duration_cast<microseconds>(stop - start);
 
-        cout << endl << "---Sort By Name: Descending Order--------" << endl;
+        cout << "---Sort By Name: Descending Order--------" << endl;
         printVector(record);
 
         cout << endl;
@@ -754,6 +803,7 @@ void SortByPrice(vector<Records>& record, string OrderPreference, string SortPre
 
     cout << "Sort By (Ascending/Descending): ";
     cin >> OrderPreference;
+    system("cls");
 
     auto start = high_resolution_clock::now();
 
@@ -764,7 +814,7 @@ void SortByPrice(vector<Records>& record, string OrderPreference, string SortPre
         auto stop = high_resolution_clock::now();
         auto duration = duration_cast<microseconds>(stop - start);
 
-        cout << endl << "---Sort By Price: Ascending Order--------" << endl;
+        cout << "---Sort By Price: Ascending Order--------" << endl;
         printVector(record);
 
         cout << endl;
@@ -783,7 +833,7 @@ void SortByPrice(vector<Records>& record, string OrderPreference, string SortPre
         auto stop = high_resolution_clock::now();
         auto duration = duration_cast<microseconds>(stop - start);
 
-        cout << endl << "---Sort By Price: Descending Order-------" << endl;
+        cout << "---Sort By Price: Descending Order-------" << endl;
         printVector(record);
 
         cout << endl;
@@ -808,6 +858,7 @@ void SortByQuantity(vector<Records>& record, string OrderPreference, string Sort
 
     cout << "Sort By (Ascending/Descending): ";
     cin >> OrderPreference;
+    system("cls");
 
     auto start = high_resolution_clock::now();
 
@@ -818,7 +869,7 @@ void SortByQuantity(vector<Records>& record, string OrderPreference, string Sort
         auto stop = high_resolution_clock::now();
         auto duration = duration_cast<microseconds>(stop - start);
 
-        cout << endl << "---Sort By Quantity: Ascending Order-----";
+        cout << "---Sort By Quantity: Ascending Order-----" << endl;
 
         printVector(record);
 
@@ -837,7 +888,7 @@ void SortByQuantity(vector<Records>& record, string OrderPreference, string Sort
         auto stop = high_resolution_clock::now();
         auto duration = duration_cast<microseconds>(stop - start);
 
-        cout << endl << "---Sort By Quantity: Descending Order----";
+        cout << "---Sort By Quantity: Descending Order----" << endl;
         printVector(record);
 
         cout << endl;
@@ -909,12 +960,13 @@ void removeDuplicates(vector<Records>& record)
     int previous = 0;
     int detected_dupes = 0;
     
-    cout << endl;
+    system("cls");
+
     for (int current = 1; current < record.size(); current++)
     {
         if (record[current].name == record[previous].name)
         {
-            cout << "index " << current << ": " << record[current].name << endl;
+            cout << "---index " << current << ": " << record[current].name << endl;
             record.erase(record.begin() + current);
             detected_dupes++;
         }
@@ -923,11 +975,15 @@ void removeDuplicates(vector<Records>& record)
 
     if (detected_dupes == 0)
     {
-        cout << endl << "No duplicates detected." << endl;
+        system("cls");
+        cout << "---No duplicates detected." << endl;
+        printVector(record);
     }
     else
     {
-        cout << "has been removed and excess memory has been released. " << endl;
+        cout << "---has been removed and excess memory has been released. " << endl;
+        printVector(record);
+
     }
 
     record.shrink_to_fit();
