@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <chrono>
 #include <iomanip>
-#include <queue>
+#include <list>
 
 using namespace std;
 using namespace std::chrono;
@@ -19,27 +19,20 @@ struct Records {
 
 };
 
-//circular linked list implementation
-struct Node
-{
-    string data;
-    struct Node* next;
-};
-
 void printVector(vector<Records>);
 void MenuController(vector<Records>&);
 void printMainMenu(vector<Records>);
-//void printhistorySeq();
+void printhistorySeq(vector<string>&);
 
-void SortByName(vector<Records>&, string, string);
-void SortByPrice(vector<Records>&, string, string);
-void SortByQuantity(vector<Records>&, string, string);
+void SortByName(vector<Records>&, vector<string>&, string, string);
+void SortByPrice(vector<Records>&, vector<string>&, string, string);
+void SortByQuantity(vector<Records>&, vector<string>&, string, string);
 
-void InsertElement(vector<Records>&);
-void ModifyElement(vector<Records>&);
-void RemoveElement(vector<Records>&);
+void InsertElement(vector<Records>&, vector<string>&);
+void ModifyElement(vector<Records>&, vector<string>&);
+void RemoveElement(vector<Records>&, vector<string>&);
 
-void Search(vector<Records>);
+void Search(vector<Records>, vector<string>&);
 int BinarySearch(vector<Records>, int, int, string);
 
 bool isdigitCheck(string);
@@ -47,25 +40,16 @@ bool isalphaCheck(string);
 void CapacityCheck(vector<Records>);
 bool isSortedCheck(vector<Records> record);
 
-void GenerateProductID(vector<Records>&);
+void GenerateProductID(vector<Records>&, vector<string>&);
 string GenerateKEY(string);
 
-void ImportFile(vector<Records>&);
+void ImportFile(vector<Records>&, vector<string>&);
 void MergeVectors(vector<Records>&, vector<Records>);
 void removeDuplicates(vector<Records>&);
-
-struct Node* addToEmpty(struct Node*, string);
-struct Node* addEnd(struct Node*, string);
-void traverse(struct Node*);
 
 int main()
 {
     vector<Records> record;
-    struct Node* last = NULL;
-    last = addToEmpty(last, "hello");
-    last = addEnd(last, "hello2");
-    last = addEnd(last, "hello3");
-    traverse(last->next);
 
     ifstream inFile("PriceList.txt");
     //check if file can open
@@ -89,9 +73,7 @@ int main()
         record.push_back(tempV);
     }
     
-    //NEXT
-    //queue not releasing elements. figure out how to cap at 5 for historyseq 
-    
+    //NEXT    
     //switch input: only take first letter or fix multichar input
        
     //when importing. configure a system to match 
@@ -105,7 +87,8 @@ int main()
 
     //output final result to new file
 
-    //implement history sequence. array[5] to print at the top of every clearscr
+    //get rid of func runtime for sort funcs
+
 
     cout << "---Base data from file-------------------" << endl;
     printVector(record);
@@ -123,11 +106,12 @@ void MenuController(vector<Records>& record)
 
     char choice;
     string Sort_Preference, Sort_Order;
+    vector<string> historySeq;
+
 
     do {
 
-        cout << "History: ";
-        //printQueue(historyseq);
+        //last = addToEmpty(last, "Historyseq: ");
 
         printMainMenu(record);
         cin >> choice;
@@ -135,12 +119,14 @@ void MenuController(vector<Records>& record)
         switch (choice)
         {
         case '1':
-            //printtable: pass1, pass2
+            //printtable: pass1, pass2, pass3
             system("cls");
+            
+            historySeq.push_back("PrintRecords");
+            printhistorySeq(historySeq);
+
             cout << "---Printing Records." << endl;
             printVector(record);
-            
-            //historySequence.push("Print");
             break;
 
         case '2':
@@ -155,28 +141,21 @@ void MenuController(vector<Records>& record)
             switch (choice)
             {
             case '1':
-                //sortbyname: pass1, pass2
-                SortByName(record, Sort_Order, Sort_Preference);
+                //sortbyname: pass1, pass2, pass3
+                SortByName(record, historySeq, Sort_Order, Sort_Preference);
                 isSorted = true;
-                
-                
-                //historySequence.push("SortByName");
                 break;
 
             case '2':
-                //sortbyprice: pass1, pass2 
-                SortByPrice(record, Sort_Order, Sort_Preference);
+                //sortbyprice: pass1, pass2, pass3
+                SortByPrice(record, historySeq, Sort_Order, Sort_Preference);
                 isSorted = false;
-
-                //historySequence.push("SortByPrice");
                 break;
 
             case '3':
-                //sortbyqty: pass1, pass2
-                SortByQuantity(record, Sort_Order, Sort_Preference);
+                //sortbyqty: pass1, pass2, pass3
+                SortByQuantity(record, historySeq, Sort_Order, Sort_Preference);
                 isSorted = false;
-
-                //historySequence.push("SortByQty");
                 break;
             }
             break;
@@ -194,89 +173,85 @@ void MenuController(vector<Records>& record)
             switch (choice)
             {
             case '1':
-                //insertelement: pass1, pass2
-                InsertElement(record);
+                //insertelement: pass1, pass2, pass3
+                InsertElement(record, historySeq);
                 isSorted = false;
-
-                //historySequence.push("InsertElement");
                 break;
 
             case '2':
-                //modifyelement: pass1, pass2
+                //modifyelement: pass1, pass2, pass3
                 if (isSorted == 0)
                 {
                     system("cls");
+                    printhistorySeq(historySeq);
                     cout << "---Function requires records to be sorted by name!" << endl;
                     printVector(record);
-
-                    //historySequence.push("ModifyElement");
                     break;
                 }
 
-                ModifyElement(record);
+                ModifyElement(record, historySeq);
                 isSorted = false;
                 break;
 
             case '3':
-                //removelement: pass1, pass2
+                //removelement: pass1, pass2, pass3
                 if (isSorted == 0)
                 {
                     system("cls");
+                    printhistorySeq(historySeq);
                     cout << "---Function requires records to be sorted by name!" << endl;
                     printVector(record);
-
-                    //historySequence.push("RemoveElement");
                     break;
                 }
 
-                RemoveElement(record);
+                RemoveElement(record, historySeq);
                 break;
             }
             break;
 
         case '4':
-            //generateid: pass1, pass2
-            GenerateProductID(record);
-
-            //historySequence.push("GenerateID");
+            //generateid: pass1, pass2, pass3
+            GenerateProductID(record, historySeq);
             break;
 
         case '5':
-            //search: pass1, pass2
+            //search: pass1, pass2, pass3
             if (isSorted == 0)
             {
                 system("cls");
+                printhistorySeq(historySeq);
                 cout << "---Function requires records to be sorted by name!" << endl;
                 printVector(record);
                 
-                //historySequence.push("Search");
                 break;
             }
 
-            Search(record);
+            Search(record, historySeq);
             break;
 
         case '6':
-            //import&merge file: pass1, pass2
+            //import&merge file: pass1, pass2, pass3
 
-            ImportFile(record);
+            ImportFile(record, historySeq);
             isSorted = false;
-
-            //historySequence.push("Import&Merge");
             break;
 
         case '7':
-            //duplicate check: pass1, pass2
+            //duplicate check: pass1, pass2, pass3
             if (isSorted == 0)
             {
                 system("cls");
+                printhistorySeq(historySeq);
                 cout << "---Function requires records to be sorted by name!" << endl;
                 printVector(record);
 
-                //historySequence.push("DuplicateCheck");
+                //last = addEnd(last, "DuplicateCheck");
                 break;
             }
+            system("cls");
 
+            historySeq.push_back("removeDupes");
+            printhistorySeq(historySeq);
             removeDuplicates(record);
             break;
 
@@ -286,16 +261,17 @@ void MenuController(vector<Records>& record)
 
         case '9':
             //quit:pass
-
-            //historySequence.push("Quit");
+            
+            cout << endl;
+            //last = addEnd(last, "Quit");
             return;
 
         case '0':
             //restart:pass
             system("cls");
+            historySeq.push_back("Restart");
+            printhistorySeq(historySeq);
             printVector(record);
-
-            //historySequence.push("Restart");
             break;
         }
 
@@ -357,54 +333,21 @@ void printVector(vector<Records> vector)
 
 }
 
-void printhistorySeq()
+void printhistorySeq(vector<string>& historySeq)
 {
-    
-}
-
-struct Node* addToEmpty(struct Node* last, string data)
-{
-    if (last != NULL)
-        return last;
-
-    struct Node* temp = new Node;
-
-    temp->data = data;
-    last = temp;
-
-    last->next = last;
-
-    return last;
-}
-
-struct Node* addEnd(struct Node* last, string data)
-{
-    if (last == NULL)
-        return addToEmpty(last, data);
-
-    struct Node* temp = new Node;
-
-    temp->data = data;
-    temp->next = last->next;
-    last->next = temp;
-    last = temp;
-
-    return last;
-}
-
-void traverse(struct Node* first)
-{
-    struct Node* tmp = first;
-
-    if (first != NULL)
+    //remove historySeq[0] when vector.size() reaches 5. cap size() at 5.
+    if (historySeq.size() > 5)
     {
-        do
-        {
-            cout << tmp->data << " ";
-            tmp = tmp->next;
-
-        } while (tmp != first);
+        historySeq.erase(historySeq.begin());
     }
+
+    cout << "History: ";
+    for (int i = 0; i < (int)historySeq.size(); i++)
+    {
+        cout << historySeq[i] << " ";
+    }
+
+    cout << endl << endl;
 }
 
 void MergeVectors(vector<Records>& vector1, vector<Records> vector2)
@@ -417,7 +360,7 @@ void MergeVectors(vector<Records>& vector1, vector<Records> vector2)
     printVector(vector1);
 }
 
-void ImportFile(vector<Records>& record)
+void ImportFile(vector<Records>& record, vector<string>& historySeq)
 {
     vector<Records> tempVector;
     string filename;
@@ -426,6 +369,10 @@ void ImportFile(vector<Records>& record)
     cin >> filename;
         
     system("cls");
+
+    historySeq.push_back("Import&Merge");
+    printhistorySeq(historySeq);
+
     //printVector(record);
 
     ifstream inFile;
@@ -463,7 +410,7 @@ void ImportFile(vector<Records>& record)
     return;
 }
 
-void Search(vector<Records> record)
+void Search(vector<Records> record, vector<string>& historySeq)
 {
     string ValueLookup;
     cout << endl << "Search Name: ";
@@ -477,6 +424,10 @@ void Search(vector<Records> record)
     {
 
         system("cls");
+
+        historySeq.push_back("Search");
+        printhistorySeq(historySeq);
+
         cout << "---Index of " << index << ": ["
             << record[index].name << ":"
             << record[index].price << ":"
@@ -583,7 +534,7 @@ string GenerateKEY(string NameToID)
     return EncodedID;
 }
 
-void GenerateProductID(vector<Records>& record)
+void GenerateProductID(vector<Records>& record, vector<string>& historySeq)
 {
 
     for (int i = 0; i < (int)record.size(); i++)
@@ -592,11 +543,15 @@ void GenerateProductID(vector<Records>& record)
     }
 
     system("cls");
+
+    historySeq.push_back("GenerateID");
+    printhistorySeq(historySeq);
+
     cout << "---Generating product ID on record items." << endl;
     printVector(record);
 }
 
-void RemoveElement(vector<Records>& record)
+void RemoveElement(vector<Records>& record, vector<string>& historySeq)
 {
     string Confirmation;
     string ElementToRemove;
@@ -624,6 +579,9 @@ void RemoveElement(vector<Records>& record)
 
             system("cls");
 
+            historySeq.push_back("RemoveElement");
+            printhistorySeq(historySeq);
+
             cout << "---Removed ["
                 << record[index].name << ":"
                 << record[index].price << ":"
@@ -639,7 +597,7 @@ void RemoveElement(vector<Records>& record)
     return;
 }
 
-void ModifyElement(vector<Records>& record)
+void ModifyElement(vector<Records>& record, vector<string>& historySeq)
 {
     string ModifyInput;
     string ElementToModify;
@@ -709,12 +667,10 @@ void ModifyElement(vector<Records>& record)
 
         if ((Confirmation == "Y" || Confirmation == "y" || Confirmation == "Yes" || Confirmation == "yes"))
         {
-
-            record[index].name = InsertName;
-            record[index].price = InsertPrice_Float;
-            record[index].quantity = InsertQuantity_Int;
-
             system("cls");
+
+            historySeq.push_back("InsertElement");
+            printhistorySeq(historySeq);
 
                 cout << "---Modified ["
                 << record[index].name << ":"
@@ -724,6 +680,10 @@ void ModifyElement(vector<Records>& record)
                 << InsertPrice_Float << ":"
                 << InsertQuantity_Int << "] "
                 << endl;
+
+                record[index].name = InsertName;
+                record[index].price = InsertPrice_Float;
+                record[index].quantity = InsertQuantity_Int;
 
             printVector(record);
             return;
@@ -736,7 +696,7 @@ void ModifyElement(vector<Records>& record)
     return;
 }
 
-void InsertElement(vector<Records>& record)
+void InsertElement(vector<Records>& record, vector<string>& historySeq)
 {
     Records DummyElement;
 
@@ -821,6 +781,9 @@ void InsertElement(vector<Records>& record)
 
         system("cls");
 
+        historySeq.push_back("InsertElement");
+        printhistorySeq(historySeq);
+
         cout << "---Inserted ["
             << DummyElement.name << ":"
             << DummyElement.price << ":"
@@ -835,62 +798,59 @@ void InsertElement(vector<Records>& record)
     return;
 }
 
-void SortByName(vector<Records>& record, string OrderPreference, string SortPreference)
+void SortByName(vector<Records>& record, vector<string>& historySeq, string OrderPreference, string SortPreference)
 {
     string Repeat;
 
     cout << "Sort By (Ascending/Descending): ";
     cin >> OrderPreference;
 
-    auto start = high_resolution_clock::now();
-
     if (OrderPreference == "Ascending" || OrderPreference == "ascending") {
 
         system("cls");
+
+        historySeq.push_back("SortName-A");
+        printhistorySeq(historySeq);
+
         sort(record.begin(), record.end(), [](Records a, Records b)
             {return a.name < b.name; });
-
-        auto stop = high_resolution_clock::now();
-        auto duration = duration_cast<microseconds>(stop - start);
 
         cout << "---Sort By Name: Ascending Order" << endl;
         printVector(record);
 
         cout << endl;
         cout << "---Time complexity : O(nlogn)" << endl;
-        cout << "---Function runtime: ";
-        cout << duration.count() << "ms" << endl;
         return;
 
     }
     else if (OrderPreference == "Descending" || OrderPreference == "descending") {
 
         system("cls");
+
+        historySeq.push_back("SortName-D");
+        printhistorySeq(historySeq);
+
         sort(record.begin(), record.end(), [](Records a, Records b)
             {return a.name > b.name; });
 
-        auto stop = high_resolution_clock::now();
-        auto duration = duration_cast<microseconds>(stop - start);
 
         cout << "---Sort By Name: Descending Order" << endl;
         printVector(record);
 
         cout << endl;
         cout << "---Time complexity : O(nlogn)" << endl;
-        cout << "---Function runtime: ";
-        cout << duration.count() << "ms" << endl;
         return;
 
     }
     else
     {
         cout << "Invalid input. " << endl;
-        SortByName(record, OrderPreference, SortPreference);
+        SortByName(record, historySeq,OrderPreference, SortPreference);
     }
 
 }
 
-void SortByPrice(vector<Records>& record, string OrderPreference, string SortPreference)
+void SortByPrice(vector<Records>& record, vector<string>& historySeq, string OrderPreference, string SortPreference)
 {
     string Repeat;
 
@@ -902,6 +862,10 @@ void SortByPrice(vector<Records>& record, string OrderPreference, string SortPre
     if (OrderPreference == "Ascending" || OrderPreference == "ascending") {
 
         system("cls");
+
+        historySeq.push_back("SortPrice-A");
+        printhistorySeq(historySeq);
+
         sort(record.begin(), record.end(), [](Records a, Records b)
             {return a.price < b.price; });
 
@@ -923,6 +887,10 @@ void SortByPrice(vector<Records>& record, string OrderPreference, string SortPre
     else if (OrderPreference == "Descending" || OrderPreference == "descending") {
 
         system("cls");
+
+        historySeq.push_back("SortPrice-D");
+        printhistorySeq(historySeq);
+
         sort(record.begin(), record.end(), [](Records a, Records b)
             {return a.price > b.price; });
 
@@ -943,28 +911,28 @@ void SortByPrice(vector<Records>& record, string OrderPreference, string SortPre
     else
     {
         cout << "Invalid input. " << endl;
-        SortByPrice(record, OrderPreference, SortPreference);
+        SortByPrice(record, historySeq, OrderPreference, SortPreference);
     }
 
 }
 
-void SortByQuantity(vector<Records>& record, string OrderPreference, string SortPreference)
+void SortByQuantity(vector<Records>& record, vector<string>& historySeq, string OrderPreference, string SortPreference)
 {
     string Repeat;
 
     cout << "Sort By (Ascending/Descending): ";
     cin >> OrderPreference;
 
-    auto start = high_resolution_clock::now();
 
     if (OrderPreference == "Ascending" || OrderPreference == "ascending") {
 
         system("cls");
+
+        historySeq.push_back("SortQty-A");
+        printhistorySeq(historySeq);
+
         sort(record.begin(), record.end(), [](Records a, Records b)
             {return a.quantity < b.quantity; });
-
-        auto stop = high_resolution_clock::now();
-        auto duration = duration_cast<microseconds>(stop - start);
 
         cout << "---Sort By Quantity: Ascending Order" << endl;
 
@@ -972,36 +940,32 @@ void SortByQuantity(vector<Records>& record, string OrderPreference, string Sort
 
         cout << endl;
         cout << "---Time complexity : O(nlogn)" << endl;
-        cout << "---Function runtime: ";
-        cout << duration.count() << "ms" << endl;
-
         return;
 
     }
     else if (OrderPreference == "Descending" || OrderPreference == "descending") {
 
         system("cls");
+
+        historySeq.push_back("SortQty-D");
+        printhistorySeq(historySeq);
+
         sort(record.begin(), record.end(), [](Records a, Records b)
             {return a.quantity > b.quantity; });
 
-        auto stop = high_resolution_clock::now();
-        auto duration = duration_cast<microseconds>(stop - start);
 
         cout << "---Sort By Quantity: Descending Order" << endl;
         printVector(record);
 
         cout << endl;
         cout << "---Time complexity : O(nlogn)" << endl;
-        cout << "---Function runtime: ";
-        cout << duration.count() << "ms" << endl;
-
         return;
 
     }
     else
     {
         cout << "Invalid input. " << endl;
-        SortByQuantity(record, OrderPreference, SortPreference);
+        SortByQuantity(record, historySeq, OrderPreference, SortPreference);
     }
 
 }
@@ -1059,7 +1023,6 @@ void removeDuplicates(vector<Records>& record)
     int previous = 0;
     int detected_dupes = 0;
     
-    system("cls");
 
     for (int current = 1; current < record.size(); current++)
     {
