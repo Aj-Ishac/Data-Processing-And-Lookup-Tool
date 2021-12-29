@@ -73,9 +73,7 @@ int main()
         record.push_back(tempV);
     }
     
-    //NEXT    
-    //switch input: only take first letter or fix multichar input
-       
+    //NEXT           
     //when importing. configure a system to match 
     //string to name, float to price, int to qty
     
@@ -104,7 +102,7 @@ void MenuController(vector<Records>& record)
     bool Repeat = true;
     bool isSorted = false;
 
-    char choice;
+    char choice[1];
     string Sort_Preference, Sort_Order;
     vector<string> historySeq;
 
@@ -116,7 +114,7 @@ void MenuController(vector<Records>& record)
         printMainMenu(record);
         cin >> choice;
 
-        switch (choice)
+        switch (choice[0])
         {
         case '1':
             //printtable: pass1, pass2, pass3
@@ -138,7 +136,7 @@ void MenuController(vector<Records>& record)
             cout << "Input choice (1-3): ";
             cin >> choice;
 
-            switch (choice)
+            switch (choice[0])
             {
             case '1':
                 //sortbyname: pass1, pass2, pass3
@@ -170,7 +168,7 @@ void MenuController(vector<Records>& record)
             cout << "Input choice (1-3): ";
             cin >> choice;
 
-            switch (choice)
+            switch (choice[0])
             {
             case '1':
                 //insertelement: pass1, pass2, pass3
