@@ -51,7 +51,7 @@ int main()
     vector<Records> record;
 
     ifstream inFile("PriceList.txt");
-    //check if file can open
+    //throw error if file can't open
     if (!inFile)
     {
         cerr << "File cannot be opened. " << endl;
@@ -79,19 +79,16 @@ int main()
     
     //output into basefile
 
-    //warning dept cleanup
+    //look into remembering last sortname so user
+    //doesn't have to do it everytime they run func dependent on sortname
 
-    //more specifics on what to remove with removeduplicate func
+    //warning dept cleanup
 
     //output final result to new file
 
     //inventory changes
 
-    //invalid input for switches not clearing scr
-
     //modify: allow to keep segments as is
-
-    //removing last element of table crashes program
 
     cout << "---Base data from file-------------------" << endl;
     printVector(record);
@@ -478,6 +475,7 @@ void Search(vector<Records> record, vector<string>& historySeq)
             << record[index].name << ":"
             << record[index].price << ":"
             << record[index].quantity << "] " << endl;
+
         printVector(record);
         
 
@@ -509,7 +507,7 @@ int BinarySearch(vector<Records> record, int low, int high, string ValueLookup)
             int mid = (low + high) / 2;
             if (ValueLookup == record[mid].name)
                 return mid;
-
+            
             if (ValueLookup > record[mid].name)
                 return BinarySearch(record, low, mid - 1, ValueLookup);
             if (ValueLookup < record[mid].name)
@@ -652,6 +650,9 @@ void ModifyElement(vector<Records>& record, vector<string>& historySeq)
     string InsertPrice;
     string InsertQuantity;
 
+    int InsertQuantity_Int = 0;
+    float InsertPrice_Float = 0;
+
     bool Repeat;
     string Confirmation;
 
@@ -662,7 +663,8 @@ void ModifyElement(vector<Records>& record, vector<string>& historySeq)
 
     if (index > -1)
     {
-        cout << endl << "Modifying ["
+        cout << endl << "Type 'nochange' for element variables you wish to keep unchanged." << endl;
+        cout << "Modifying ["
             << record[index].name << ":"
             << record[index].price << ":"
             << record[index].quantity << "] at index " << index << "." << endl << endl;
@@ -673,8 +675,11 @@ void ModifyElement(vector<Records>& record, vector<string>& historySeq)
 
             cout << "Input Name: ";
             cin >> InsertName;
-
-            Repeat = isdigitCheck(InsertName);
+            
+            if (InsertName != "nochange")
+            {
+                Repeat = isdigitCheck(InsertName);
+            }
 
         } while (Repeat);
 
@@ -685,10 +690,15 @@ void ModifyElement(vector<Records>& record, vector<string>& historySeq)
             cout << "Input Price: ";
             cin >> InsertPrice;
             
-            Repeat = isalphaCheck(InsertPrice);
+            if (InsertPrice != "nochange")
+            {
+                Repeat = isalphaCheck(InsertPrice);
+            }
 
         } while (Repeat);
-        float InsertPrice_Float = stof(InsertPrice);
+
+        if (InsertPrice != "nochange")
+            InsertPrice_Float = stof(InsertPrice);
 
         do {
 
@@ -697,16 +707,45 @@ void ModifyElement(vector<Records>& record, vector<string>& historySeq)
             cout << "Input Quantity: ";
             cin >> InsertQuantity;
 
-            Repeat = isalphaCheck(InsertQuantity);
+            if (InsertQuantity != "nochange")
+            {
+                Repeat = isalphaCheck(InsertQuantity);
+            }
 
         } while (Repeat);
-        int InsertQuantity_Int = stof(InsertQuantity);
+
+        if (InsertQuantity != "nochange")
+            InsertQuantity_Int = stof(InsertQuantity);
 
         cout << endl;
-        cout << "Confirm ["
-            << record[index].name << ":"
-            << record[index].price << ":"
-            << record[index].quantity << "]? (Y/N): ";
+        cout << "Confirm [";
+
+            if (InsertName != "nochange")
+            {
+                cout << InsertName << ":";
+            }
+            else
+            {
+                cout << record[index].name << ":";
+            }
+
+            if (InsertPrice != "nochange") 
+            {
+                cout << InsertPrice << ":";
+            }
+            else
+            {
+                cout << record[index].price << ":";
+            }
+
+            if (InsertQuantity != "nochange")
+            {
+                cout << InsertQuantity << "]? (Y/N): ";
+            }
+            else
+            {
+                cout << record[index].quantity << "]? (Y/N): ";
+            }
 
         cin >> Confirmation;
 
@@ -720,15 +759,42 @@ void ModifyElement(vector<Records>& record, vector<string>& historySeq)
             cout << "---Modified ["
                 << record[index].name << ":"
                 << record[index].price << ":"
-                << record[index].quantity << "] to ["
-                << InsertName << ":"
+                << record[index].quantity << "] to [";
+                /* << InsertName << ":"
                 << InsertPrice_Float << ":"
                 << InsertQuantity_Int << "] "
-                << endl;
+                << endl;*/
 
-            record[index].name = InsertName;
-            record[index].price = InsertPrice_Float;
-            record[index].quantity = InsertQuantity_Int;
+
+            if(InsertName != "nochange")
+            {
+                record[index].name = InsertName;
+                cout << InsertName << ":";
+            }
+            else
+            {
+                cout << record[index].name << ":";
+            }
+
+            if (InsertPrice != "nochange")
+            {
+                record[index].price = InsertPrice_Float;
+                cout << InsertPrice_Float << ":";
+            }
+            else
+            {
+                cout << record[index].price << ":";
+            }
+
+            if (InsertQuantity != "nochange")
+            {
+                record[index].quantity = InsertQuantity_Int;
+                cout << InsertQuantity_Int << "] " << endl;
+            }
+            else
+            {
+                cout << record[index].quantity << "] " << endl;
+            }
 
             printVector(record);
             return;
@@ -736,6 +802,7 @@ void ModifyElement(vector<Records>& record, vector<string>& historySeq)
     }
 
     system("cls");
+    cout << "---Failed to find input. " << endl;
     printVector(record);
     return;
 }
