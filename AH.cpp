@@ -73,7 +73,8 @@ int main()
         record.push_back(tempV);
     }
     
-    //NEXT           
+    //NEXT    
+    
     //when importing. configure a system to match 
     //string to name, float to price, int to qty
     
