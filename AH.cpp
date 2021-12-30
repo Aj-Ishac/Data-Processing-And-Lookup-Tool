@@ -23,6 +23,7 @@ void printVector(vector<Records>);
 void MenuController(vector<Records>&);
 void printMainMenu(vector<Records>);
 void printhistorySeq(vector<string>&);
+void outputTable(vector<Records>);
 
 void SortByName(vector<Records>&, vector<string>&, string, string);
 void SortByPrice(vector<Records>&, vector<string>&, string, string);
@@ -88,11 +89,21 @@ int main()
 
     //inventory changes
 
-    //modify: allow to keep segments as is
+    //when duperemove, let user pick which to remove
+
+    //force name input to be under char[12]. set char limit
+    //store whatever, only print first x chars in table
+
+    //comments
+
+    //add base table to ui when merging
+
 
     cout << "---Base data from file-------------------" << endl;
     printVector(record);
     MenuController(record);
+
+    outputTable(record);
 
     inFile.close();
     return 0;
@@ -141,7 +152,7 @@ void MenuController(vector<Records>& record)
                 cout << "Input choice (1-3): ";
                 cin >> choice;
 
-                //checks if choice[] input is alphabetical.forces a try again if so
+                //checks if choice[] input is alphabetical. forces a try again if it is
                 invalidChoice = isalphaCheck(choice);
                 if (invalidChoice == false)
                 {
@@ -339,7 +350,8 @@ void printMainMenu(vector<Records> record)
 
 void printVector(vector<Records> vector)
 {
-    if (vector[0].productID.size() != 0) {
+    if (vector[0].productID.size() != 0) 
+    {
 
         cout << "---Vector.size(): " << vector.size() << endl;
         cout << "-----------------------------------------" << endl;
@@ -379,7 +391,6 @@ void printhistorySeq(vector<string>& historySeq)
     //only print history: when size() not empty
     if (historySeq.size() != 0)
     {
-        cout << "-----------------------------------------" << endl;
         cout << "History: ";
 
         //historySeq print
@@ -393,7 +404,47 @@ void printhistorySeq(vector<string>& historySeq)
     }        
     //deallocate excess memory down to vector size()
     historySeq.shrink_to_fit();
-    cout << endl << endl;
+    cout << endl;
+}
+
+void outputTable(vector<Records> vector)
+{
+    ofstream outputFile;
+    outputFile.open("outputFile.txt");
+
+    outputFile << "[outputFile.txt]" << endl;
+
+    if (vector[0].productID.size() != 0)
+    {
+        outputFile << "---Vector.size(): " << vector.size() << endl;
+        outputFile << "---vector.capacity(): " << vector.capacity() << endl;
+        outputFile << "-----------------------------------------" << endl;
+        outputFile << endl << "     -ID-        -Name-       -Price-   -Qty-" << endl;
+        for (int i = 0; i < (int)vector.size(); i++)
+        {
+            outputFile << " ";
+            outputFile << left << vector[i].productID << "   ";
+            outputFile << setw(10) << left << vector[i].name << "   ";
+            outputFile << setw(6) << right << fixed << setprecision(2) << vector[i].price << "   ";
+            outputFile << setw(6) << right << vector[i].quantity << "   ";
+            outputFile << endl;
+        }
+    }
+    else
+    {
+        outputFile << "---Vector.size(): " << vector.size() << endl;
+        outputFile << "---vector.capacity(): " << vector.capacity() << endl;
+        outputFile << "-----------------------------------------" << endl;
+        outputFile << endl << "  -Name-       -Price-    -Qty-" << endl;
+        for (int i = 0; i < (int)vector.size(); i++) {
+            outputFile << " ";
+            outputFile << setw(10) << left << vector[i].name << "   ";
+            outputFile << setw(6) << right << fixed << setprecision(2) << vector[i].price << " ";
+            outputFile << setw(8) << right << vector[i].quantity << "   ";
+            outputFile << endl;
+        }
+    }
+
 }
 
 void MergeVectors(vector<Records>& vector1, vector<Records> vector2)
@@ -677,10 +728,8 @@ void ModifyElement(vector<Records>& record, vector<string>& historySeq)
             cin >> InsertName;
             
             if (InsertName != "nochange")
-            {
                 Repeat = isdigitCheck(InsertName);
-            }
-
+           
         } while (Repeat);
 
         do {
@@ -691,9 +740,7 @@ void ModifyElement(vector<Records>& record, vector<string>& historySeq)
             cin >> InsertPrice;
             
             if (InsertPrice != "nochange")
-            {
-                Repeat = isalphaCheck(InsertPrice);
-            }
+                Repeat = isalphaCheck(InsertPrice);  
 
         } while (Repeat);
 
@@ -708,9 +755,7 @@ void ModifyElement(vector<Records>& record, vector<string>& historySeq)
             cin >> InsertQuantity;
 
             if (InsertQuantity != "nochange")
-            {
                 Repeat = isalphaCheck(InsertQuantity);
-            }
 
         } while (Repeat);
 
@@ -721,31 +766,22 @@ void ModifyElement(vector<Records>& record, vector<string>& historySeq)
         cout << "Confirm [";
 
             if (InsertName != "nochange")
-            {
                 cout << InsertName << ":";
-            }
             else
-            {
                 cout << record[index].name << ":";
-            }
 
+            
             if (InsertPrice != "nochange") 
-            {
                 cout << InsertPrice << ":";
-            }
             else
-            {
                 cout << record[index].price << ":";
-            }
+
 
             if (InsertQuantity != "nochange")
-            {
                 cout << InsertQuantity << "]? (Y/N): ";
-            }
             else
-            {
                 cout << record[index].quantity << "]? (Y/N): ";
-            }
+
 
         cin >> Confirmation;
 
@@ -772,9 +808,7 @@ void ModifyElement(vector<Records>& record, vector<string>& historySeq)
                 cout << InsertName << ":";
             }
             else
-            {
                 cout << record[index].name << ":";
-            }
 
             if (InsertPrice != "nochange")
             {
@@ -782,9 +816,7 @@ void ModifyElement(vector<Records>& record, vector<string>& historySeq)
                 cout << InsertPrice_Float << ":";
             }
             else
-            {
                 cout << record[index].price << ":";
-            }
 
             if (InsertQuantity != "nochange")
             {
@@ -792,9 +824,7 @@ void ModifyElement(vector<Records>& record, vector<string>& historySeq)
                 cout << InsertQuantity_Int << "] " << endl;
             }
             else
-            {
                 cout << record[index].quantity << "] " << endl;
-            }
 
             printVector(record);
             return;
@@ -1133,7 +1163,8 @@ void removeDuplicates(vector<Records>& record)
 
     int previous = 0;
     int detected_dupes = 0;
-    
+
+    cout << "---Detected duplicates: " << endl;
     for (int current = 1; current < record.size(); current++)
     {
         if (record[current].name == record[previous].name)
