@@ -25,9 +25,10 @@ void printMainMenu(vector<Records>);
 void printhistorySeq(vector<string>&);
 void outputTable(vector<Records>);
 
-void SortByName(vector<Records>&, vector<string>&, string, string);
-void SortByPrice(vector<Records>&, vector<string>&, string, string);
-void SortByQuantity(vector<Records>&, vector<string>&, string, string);
+void SortByName(vector<Records>&, vector<string>&, string, bool&, bool&);
+void quicksort(vector<Records>&, bool, bool, bool&);
+void SortByPrice(vector<Records>&, vector<string>&, string);
+void SortByQuantity(vector<Records>&, vector<string>&, string);
 
 void InsertElement(vector<Records>&, vector<string>&);
 void ModifyElement(vector<Records>&, vector<string>&);
@@ -78,18 +79,11 @@ int main()
     //when importing. configure a system to match 
     //string to name, float to price, int to qty
     
-    //output into basefile
-
-    //look into remembering last sortname so user
-    //doesn't have to do it everytime they run func dependent on sortname
+    //output into basefile, excell, analytics
 
     //warning dept cleanup
 
     //output final result to new file
-
-    //inventory changes
-
-    //when duperemove, let user pick which to remove
 
     //force name input to be under char[12]. set char limit
     //store whatever, only print first x chars in table
@@ -98,7 +92,8 @@ int main()
 
     //add base table to ui when merging
 
-
+    //remove elem bad input, give same treatment from modify badinput
+   
     cout << "---Base data from file-------------------" << endl;
     printVector(record);
     MenuController(record);
@@ -113,10 +108,12 @@ void MenuController(vector<Records>& record)
 {
     bool Repeat = true;
     bool isSorted = false;
+    bool sortedName_A = false;
+    bool sortedName_D = false;
     bool invalidChoice;
-
+    
     char choice[12];
-    string Sort_Preference, Sort_Order;
+    string Sort_Order;
     vector<string> historySeq;
 
 
@@ -124,7 +121,7 @@ void MenuController(vector<Records>& record)
 
         printMainMenu(record);
         cin >> choice;
-
+        
         //checks if choice[] input is alphabetical.forces a try again if so
         invalidChoice = isalphaCheck(choice);
         if (invalidChoice == false)
@@ -160,20 +157,20 @@ void MenuController(vector<Records>& record)
                     switch (choice[0])
                     {
                     case '1':
-                        //sortbyname: pass1, pass2, pass3
-                        SortByName(record, historySeq, Sort_Order, Sort_Preference);
+                        //sortbyname:
+                        SortByName(record, historySeq, Sort_Order, sortedName_A, sortedName_D);
                         isSorted = true;
                         break;
 
                     case '2':
-                        //sortbyprice: pass1, pass2, pass3
-                        SortByPrice(record, historySeq, Sort_Order, Sort_Preference);
+                        //sortbyprice:
+                        SortByPrice(record, historySeq, Sort_Order);
                         isSorted = false;
                         break;
 
                     case '3':
-                        //sortbyqty: pass1, pass2, pass3
-                        SortByQuantity(record, historySeq, Sort_Order, Sort_Preference);
+                        //sortbyqty:
+                        SortByQuantity(record, historySeq, Sort_Order);
                         isSorted = false;
                         break;
                     }
@@ -205,13 +202,15 @@ void MenuController(vector<Records>& record)
                     switch (choice[0])
                     {
                     case '1':
-                        //insertelement: pass1, pass2, pass3
+                        //insertelement:
                         InsertElement(record, historySeq);
                         isSorted = false;
                         break;
 
                     case '2':
-                        //modifyelement: pass1, pass2, pass3
+                        //modifyelement:
+                        quicksort(record, sortedName_A, sortedName_D, isSorted);
+
                         if (isSorted == 0)
                         {
                             system("cls");
@@ -226,7 +225,9 @@ void MenuController(vector<Records>& record)
                         break;
 
                     case '3':
-                        //removelement: pass1, pass2, pass3
+                        //removelement:
+                        quicksort(record, sortedName_A, sortedName_D, isSorted);
+
                         if (isSorted == 0)
                         {
                             system("cls");
@@ -251,12 +252,14 @@ void MenuController(vector<Records>& record)
                 break;
 
             case '4':
-                //generateid: pass1, pass2, pass3
+                //generateid:
                 GenerateProductID(record, historySeq);
                 break;
 
             case '5':
-                //search: pass1, pass2, pass3
+                //search:
+                quicksort(record, sortedName_A, sortedName_D, isSorted);
+
                 if (isSorted == 0)
                 {
                     system("cls");
@@ -271,14 +274,16 @@ void MenuController(vector<Records>& record)
                 break;
 
             case '6':
-                //import&merge file: pass1, pass2, pass3
+                //import&merge file:
 
                 ImportFile(record, historySeq);
                 isSorted = false;
                 break;
 
             case '7':
-                //duplicate check: pass1, pass2, pass3
+                //duplicate check:
+                quicksort(record, sortedName_A, sortedName_D, isSorted);
+
                 if (isSorted == 0)
                 {
                     system("cls");
@@ -286,7 +291,6 @@ void MenuController(vector<Records>& record)
                     cout << "---Function requires records to be sorted by name!" << endl;
                     printVector(record);
 
-                    //last = addEnd(last, "DuplicateCheck");
                     break;
                 }
 
@@ -294,18 +298,17 @@ void MenuController(vector<Records>& record)
                 break;
 
             case '8':
-                //diagnostics: later
+                //diagnostics:
                 break;
 
             case '9':
-                //quit:pass
+                //quit:
 
                 cout << endl;
-                //last = addEnd(last, "Quit");
                 return;
 
             case '0':
-                //restart:pass
+                //restart:
                 system("cls");
                 historySeq.push_back("Restart");
                 printhistorySeq(historySeq);
@@ -936,7 +939,7 @@ void InsertElement(vector<Records>& record, vector<string>& historySeq)
     return;
 }
 
-void SortByName(vector<Records>& record, vector<string>& historySeq, string OrderPreference, string SortPreference)
+void SortByName(vector<Records>& record, vector<string>& historySeq, string OrderPreference, bool& sortedName_A, bool& sortedName_D)
 {
     string Repeat;
 
@@ -958,6 +961,9 @@ void SortByName(vector<Records>& record, vector<string>& historySeq, string Orde
 
         cout << endl;
         cout << "---Time complexity : O(nlogn)" << endl;
+
+        sortedName_A = true;
+        sortedName_D = false;
         return;
 
     }
@@ -971,24 +977,26 @@ void SortByName(vector<Records>& record, vector<string>& historySeq, string Orde
         sort(record.begin(), record.end(), [](Records a, Records b)
             {return a.name > b.name; });
 
-
         cout << "---Sort By Name: Descending Order" << endl;
         printVector(record);
 
         cout << endl;
         cout << "---Time complexity : O(nlogn)" << endl;
+        
+        sortedName_A = false;
+        sortedName_D = true;
         return;
 
     }
     else
     {
         cout << "Invalid input. " << endl;
-        SortByName(record, historySeq,OrderPreference, SortPreference);
+        SortByName(record, historySeq, OrderPreference, sortedName_A, sortedName_D);
     }
 
 }
 
-void SortByPrice(vector<Records>& record, vector<string>& historySeq, string OrderPreference, string SortPreference)
+void SortByPrice(vector<Records>& record, vector<string>& historySeq, string OrderPreference)
 {
     string Repeat;
 
@@ -1035,12 +1043,12 @@ void SortByPrice(vector<Records>& record, vector<string>& historySeq, string Ord
     else
     {
         cout << "Invalid input. " << endl;
-        SortByPrice(record, historySeq, OrderPreference, SortPreference);
+        SortByPrice(record, historySeq, OrderPreference);
     }
 
 }
 
-void SortByQuantity(vector<Records>& record, vector<string>& historySeq, string OrderPreference, string SortPreference)
+void SortByQuantity(vector<Records>& record, vector<string>& historySeq, string OrderPreference)
 {
     string Repeat;
 
@@ -1089,7 +1097,7 @@ void SortByQuantity(vector<Records>& record, vector<string>& historySeq, string 
     else
     {
         cout << "Invalid input. " << endl;
-        SortByQuantity(record, historySeq, OrderPreference, SortPreference);
+        SortByQuantity(record, historySeq, OrderPreference);
     }
 
 }
@@ -1221,3 +1229,31 @@ void removeDuplicates(vector<Records>& record, vector<string>& historySeq)
     record.shrink_to_fit();
     return;
 }
+
+void quicksort(vector<Records>& record, bool sortedName_A, bool sortedName_D, bool& isSorted)
+{
+    if (isSorted == 0)
+    {
+        if (sortedName_A == 1)
+        {
+            cout << "was sorted A: true, issorted = false" << endl;
+            sort(record.begin(), record.end(), [](Records a, Records b)
+                {return a.name < b.name; });
+
+            isSorted = true;
+            return;
+        }
+        else if (sortedName_D == 1)
+        {
+            cout << "was sorted D: true, issorted = false" << endl;
+            sort(record.begin(), record.end(), [](Records a, Records b)
+                {return a.name > b.name; });
+
+            isSorted = true;
+            return;
+        }
+    }
+
+    return;
+}
+
