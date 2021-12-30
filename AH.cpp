@@ -45,7 +45,7 @@ string GenerateKEY(string);
 
 void ImportFile(vector<Records>&, vector<string>&);
 void MergeVectors(vector<Records>&, vector<Records>);
-void removeDuplicates(vector<Records>&);
+void removeDuplicates(vector<Records>&, vector<string>&);
 
 int main()
 {
@@ -289,11 +289,8 @@ void MenuController(vector<Records>& record)
                     //last = addEnd(last, "DuplicateCheck");
                     break;
                 }
-                system("cls");
 
-                historySeq.push_back("removeDupes");
-                printhistorySeq(historySeq);
-                removeDuplicates(record);
+                removeDuplicates(record, historySeq);
                 break;
 
             case '8':
@@ -998,8 +995,6 @@ void SortByPrice(vector<Records>& record, vector<string>& historySeq, string Ord
     cout << "Sort By (Ascending/Descending): ";
     cin >> OrderPreference;
 
-    auto start = high_resolution_clock::now();
-
     if (OrderPreference == "Ascending" || OrderPreference == "ascending") {
 
         system("cls");
@@ -1010,17 +1005,11 @@ void SortByPrice(vector<Records>& record, vector<string>& historySeq, string Ord
         sort(record.begin(), record.end(), [](Records a, Records b)
             {return a.price < b.price; });
 
-        auto stop = high_resolution_clock::now();
-        auto duration = duration_cast<microseconds>(stop - start);
-
         cout << "---Sort By Price: Ascending Order" << endl;
         printVector(record);
 
         cout << endl;
         cout << "---Time complexity : O(nlogn)" << endl;
-        cout << "---Function runtime: ";
-        cout << duration.count() << "ms" << endl;
-
         return;
 
 
@@ -1035,17 +1024,11 @@ void SortByPrice(vector<Records>& record, vector<string>& historySeq, string Ord
         sort(record.begin(), record.end(), [](Records a, Records b)
             {return a.price > b.price; });
 
-        auto stop = high_resolution_clock::now();
-        auto duration = duration_cast<microseconds>(stop - start);
-
         cout << "---Sort By Price: Descending Order" << endl;
         printVector(record);
 
         cout << endl;
         cout << "---Time complexity : O(nlogn)" << endl;
-        cout << "---Function runtime: ";
-        cout << duration.count() << "ms" << endl;
-
         return;
 
     }
@@ -1153,7 +1136,7 @@ void CapacityCheck(vector<Records> testVector)
     cout << endl;
 }
 
-void removeDuplicates(vector<Records>& record) 
+void removeDuplicates(vector<Records>& record, vector<string>& historySeq)
 {
     
     if (record.size() == 0)
@@ -1163,19 +1146,56 @@ void removeDuplicates(vector<Records>& record)
 
     int previous = 0;
     int detected_dupes = 0;
+    int dupetoRemove;
+    bool Repeat = false;
 
-    cout << "---Detected duplicates: " << endl;
+    system("cls");
+
+    historySeq.push_back("removeDupes");
+    printhistorySeq(historySeq); 
+
+    cout << "---Checking for duplicates." << endl;
+    printVector(record);
+
+    cout << endl << "---Detected duplicates: " << endl;
     for (int current = 1; current < record.size(); current++)
     {
         if (record[current].name == record[previous].name)
         {
-            cout << "---index " << current << " ["
+            cout << "---index " << previous << " ["
+                << record[previous].name << ":"
+                << record[previous].price << ":"
+                << record[previous].quantity << "]";
+
+            cout << " - index " << current << " ["
                 << record[current].name << ":"
                 << record[current].price << ":"
                 << record[current].quantity << "] " << endl;
 
-            //cout << "---index " << current << ": " << record[current].name << endl;
-            record.erase(record.begin() + current);
+            do 
+            {
+                cout << "Indicate index of the duplicate to remove: ";
+                cin >> dupetoRemove;
+                cout << endl;
+
+                if (dupetoRemove == previous)
+                {
+                    record.erase(record.begin() + previous);
+                }
+                else if (dupetoRemove == current)
+                {
+                    record.erase(record.begin() + current);
+                }
+                else
+                {
+                    cout << "Invalid input." << endl;
+                    cout << "Input the index number of the duplicate to remove." << endl;
+                    Repeat = true;
+
+                }
+
+            } while (Repeat);
+
             detected_dupes++;
         }
         previous++;
@@ -1184,15 +1204,19 @@ void removeDuplicates(vector<Records>& record)
     if (detected_dupes == 0)
     {
         system("cls");
+
+        historySeq.push_back("removeDupes");
+        printhistorySeq(historySeq);
+
         cout << "---No duplicates detected." << endl;
         printVector(record);
-    }
-    else
-    {
-        cout << "---has been removed and excess memory has been released. " << endl;
-        printVector(record);
 
+        return;
     }
+
+    system("cls");
+    printhistorySeq(historySeq);
+    printVector(record);
 
     record.shrink_to_fit();
     return;
