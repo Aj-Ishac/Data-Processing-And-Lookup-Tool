@@ -418,11 +418,8 @@ void ImportFile(vector<Records>& record, vector<string>& historySeq)
     cin >> filename;
         
     system("cls");
-
     historySeq.push_back("Import&Merge");
     printhistorySeq(historySeq);
-
-    //printVector(record);
 
     ifstream inFile;
     inFile.open(filename);
@@ -624,10 +621,7 @@ void RemoveElement(vector<Records>& record, vector<string>& historySeq)
         if ((Confirmation == "Y" || Confirmation == "y"
             || Confirmation == "Yes" || Confirmation == "yes"))
         {
-            record.erase(record.begin() + (index));
-
             system("cls");
-
             historySeq.push_back("RemoveElement");
             printhistorySeq(historySeq);
 
@@ -636,6 +630,8 @@ void RemoveElement(vector<Records>& record, vector<string>& historySeq)
                 << record[index].price << ":"
                 << record[index].quantity << "] at index " 
                 << index << "." << endl;
+
+            record.erase(record.begin() + (index));
 
             printVector(record);
             return;
@@ -1071,12 +1067,16 @@ void removeDuplicates(vector<Records>& record)
     int previous = 0;
     int detected_dupes = 0;
     
-
     for (int current = 1; current < record.size(); current++)
     {
         if (record[current].name == record[previous].name)
         {
-            cout << "---index " << current << ": " << record[current].name << endl;
+            cout << "---index " << current << " ["
+                << record[current].name << ":"
+                << record[current].price << ":"
+                << record[current].quantity << "] " << endl;
+
+            //cout << "---index " << current << ": " << record[current].name << endl;
             record.erase(record.begin() + current);
             detected_dupes++;
         }
