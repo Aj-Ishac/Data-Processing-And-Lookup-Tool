@@ -5,7 +5,6 @@
 #include <algorithm>
 #include <chrono>
 #include <iomanip>
-#include <list>
 
 using namespace std;
 using namespace std::chrono;
@@ -22,7 +21,7 @@ struct Records {
 void printVector(vector<Records>);
 void MenuController(vector<Records>&);
 void printMainMenu(vector<Records>);
-void printhistorySeq(vector<string>&);
+void printHistorySeq(vector<string>&);
 void outputTable(vector<Records>);
 
 void SortByName(vector<Records>&, vector<string>&, string, bool&, bool&);
@@ -79,26 +78,29 @@ int main()
     //when importing. configure a system to match 
     //string to name, float to price, int to qty
     
-    //output into basefile, excell, analytics
+    //output into basefile, analytics
 
     //warning dept cleanup
-
-    //output final result to new file
 
     //force name input to be under char[12]. set char limit
     //store whatever, only print first x chars in table
 
     //comments
 
+    //gen ID looking tiresome. consider removing by end of project
+
     //add base table to ui when merging
 
-    //remove elem bad input, give same treatment from modify badinput
+    //put print in struct as constructer
    
     cout << "---Base data from file-------------------" << endl;
+    outputTable(record);
+
     printVector(record);
     MenuController(record);
 
     outputTable(record);
+
 
     inFile.close();
     return 0;
@@ -133,7 +135,7 @@ void MenuController(vector<Records>& record)
                 system("cls");
 
                 historySeq.push_back("PrintRecords");
-                printhistorySeq(historySeq);
+                printHistorySeq(historySeq);
 
                 cout << "---Printing Records." << endl;
                 printVector(record);
@@ -178,7 +180,7 @@ void MenuController(vector<Records>& record)
                 else
                 {
                     system("cls");
-                    printhistorySeq(historySeq);
+                    printHistorySeq(historySeq);
                     cout << "---Invalid input. Digits valid only." << endl;
                     printVector(record);
                 }
@@ -214,7 +216,7 @@ void MenuController(vector<Records>& record)
                         if (isSorted == 0)
                         {
                             system("cls");
-                            printhistorySeq(historySeq);
+                            printHistorySeq(historySeq);
                             cout << "---Function requires records to be sorted by name!" << endl;
                             printVector(record);
                             break;
@@ -231,7 +233,7 @@ void MenuController(vector<Records>& record)
                         if (isSorted == 0)
                         {
                             system("cls");
-                            printhistorySeq(historySeq);
+                            printHistorySeq(historySeq);
                             cout << "---Function requires records to be sorted by name!" << endl;
                             printVector(record);
                             break;
@@ -245,7 +247,7 @@ void MenuController(vector<Records>& record)
                 else
                 {
                     system("cls");
-                    printhistorySeq(historySeq);
+                    printHistorySeq(historySeq);
                     cout << "---Invalid input. Digits valid only." << endl;
                     printVector(record);
                 }
@@ -263,7 +265,7 @@ void MenuController(vector<Records>& record)
                 if (isSorted == 0)
                 {
                     system("cls");
-                    printhistorySeq(historySeq);
+                    printHistorySeq(historySeq);
                     cout << "---Function requires records to be sorted by name!" << endl;
                     printVector(record);
 
@@ -287,7 +289,7 @@ void MenuController(vector<Records>& record)
                 if (isSorted == 0)
                 {
                     system("cls");
-                    printhistorySeq(historySeq);
+                    printHistorySeq(historySeq);
                     cout << "---Function requires records to be sorted by name!" << endl;
                     printVector(record);
 
@@ -311,7 +313,7 @@ void MenuController(vector<Records>& record)
                 //restart:
                 system("cls");
                 historySeq.push_back("Restart");
-                printhistorySeq(historySeq);
+                printHistorySeq(historySeq);
                 printVector(record);
                 break;
             }
@@ -319,7 +321,7 @@ void MenuController(vector<Records>& record)
         else
         {
             system("cls");
-            printhistorySeq(historySeq);
+            printHistorySeq(historySeq);
             cout << "---Invalid input. Digits valid only." << endl;
             printVector(record);
         }
@@ -359,7 +361,7 @@ void printVector(vector<Records> vector)
         for (int i = 0; i < (int)vector.size(); i++)
         {
             cout << " ";
-            cout << left << vector[i].productID << "   ";
+            cout << left << vector[i].productID.substr(0, 10) << "   ";
             cout << setw(10) << left << vector[i].name << "   ";
             cout << setw(6) << right << fixed << setprecision(2) << vector[i].price << "   ";
             cout << setw(6) << right << vector[i].quantity << "   ";
@@ -373,7 +375,7 @@ void printVector(vector<Records> vector)
         cout << endl << "  -Name-       -Price-    -Qty-" << endl;
         for (int i = 0; i < (int)vector.size(); i++) {
             cout << " ";
-            cout << setw(10) << left << vector[i].name << "   ";
+            cout << setw(10) << left << vector[i].name.substr(0, 10) << "   ";
             cout << setw(6) << right << fixed << setprecision(2) << vector[i].price << " ";
             cout << setw(8) << right << vector[i].quantity << "   ";
             cout << endl;
@@ -382,7 +384,7 @@ void printVector(vector<Records> vector)
 
 }
 
-void printhistorySeq(vector<string>& historySeq)
+void printHistorySeq(vector<string>& historySeq)
 {
     //remove historySeq[0] when vector.size() reaches 5. cap size() at 5.
     if (historySeq.size() > 4)
@@ -411,13 +413,12 @@ void outputTable(vector<Records> vector)
 {
     ofstream outputFile;
     outputFile.open("outputFile.txt");
-
     outputFile << "[outputFile.txt]" << endl;
-
+    //file .txt
     if (vector[0].productID.size() != 0)
     {
-        outputFile << "---Vector.size(): " << vector.size() << endl;
-        outputFile << "---vector.capacity(): " << vector.capacity() << endl;
+        outputFile << "---Vector.Size(): " << vector.size() << endl;
+        outputFile << "---Vector.Capacity(): " << vector.capacity() << endl;
         outputFile << "-----------------------------------------" << endl;
         outputFile << endl << "     -ID-        -Name-       -Price-   -Qty-" << endl;
         for (int i = 0; i < (int)vector.size(); i++)
@@ -467,7 +468,7 @@ void ImportFile(vector<Records>& record, vector<string>& historySeq)
         
     system("cls");
     historySeq.push_back("Import&Merge");
-    printhistorySeq(historySeq);
+    printHistorySeq(historySeq);
 
     ifstream inFile;
     inFile.open(filename);
@@ -490,8 +491,11 @@ void ImportFile(vector<Records>& record, vector<string>& historySeq)
 
         tempVector.push_back(tempV);
     }
+    
+    cout << "---Base Data Table" << endl;
+    printVector(record);
 
-    cout << "---Imported Data Table" << endl;
+    cout << endl << "---Imported Data Table" << endl;
     printVector(tempVector);
 
     MergeVectors(record, tempVector);
@@ -520,7 +524,7 @@ void Search(vector<Records> record, vector<string>& historySeq)
         system("cls");
 
         historySeq.push_back("Search");
-        printhistorySeq(historySeq);
+        printHistorySeq(historySeq);
 
         cout << "---Index of " << index << ": ["
             << record[index].name << ":"
@@ -640,7 +644,7 @@ void GenerateProductID(vector<Records>& record, vector<string>& historySeq)
     system("cls");
 
     historySeq.push_back("GenerateID");
-    printhistorySeq(historySeq);
+    printHistorySeq(historySeq);
 
     cout << "---Generating product ID on record items." << endl;
     printVector(record);
@@ -672,7 +676,7 @@ void RemoveElement(vector<Records>& record, vector<string>& historySeq)
         {
             system("cls");
             historySeq.push_back("RemoveElement");
-            printhistorySeq(historySeq);
+            printHistorySeq(historySeq);
 
             cout << "---Removed ["
                 << record[index].name << ":"
@@ -686,7 +690,9 @@ void RemoveElement(vector<Records>& record, vector<string>& historySeq)
             return;
         }
     }
+
     system("cls");
+    cout << "---Failed to find input. " << endl;
     printVector(record);
     return;
 }
@@ -790,7 +796,7 @@ void ModifyElement(vector<Records>& record, vector<string>& historySeq)
             system("cls");
 
             historySeq.push_back("ModifyElement");
-            printhistorySeq(historySeq);
+            printHistorySeq(historySeq);
 
             cout << "---Modified ["
                 << record[index].name << ":"
@@ -923,7 +929,7 @@ void InsertElement(vector<Records>& record, vector<string>& historySeq)
         system("cls");
 
         historySeq.push_back("InsertElement");
-        printhistorySeq(historySeq);
+        printHistorySeq(historySeq);
 
         cout << "---Inserted ["
             << DummyElement.name << ":"
@@ -951,7 +957,7 @@ void SortByName(vector<Records>& record, vector<string>& historySeq, string Orde
         system("cls");
 
         historySeq.push_back("SortName-A");
-        printhistorySeq(historySeq);
+        printHistorySeq(historySeq);
 
         sort(record.begin(), record.end(), [](Records a, Records b)
             {return a.name < b.name; });
@@ -972,7 +978,7 @@ void SortByName(vector<Records>& record, vector<string>& historySeq, string Orde
         system("cls");
 
         historySeq.push_back("SortName-D");
-        printhistorySeq(historySeq);
+        printHistorySeq(historySeq);
 
         sort(record.begin(), record.end(), [](Records a, Records b)
             {return a.name > b.name; });
@@ -1008,7 +1014,7 @@ void SortByPrice(vector<Records>& record, vector<string>& historySeq, string Ord
         system("cls");
 
         historySeq.push_back("SortPrice-A");
-        printhistorySeq(historySeq);
+        printHistorySeq(historySeq);
 
         sort(record.begin(), record.end(), [](Records a, Records b)
             {return a.price < b.price; });
@@ -1027,7 +1033,7 @@ void SortByPrice(vector<Records>& record, vector<string>& historySeq, string Ord
         system("cls");
 
         historySeq.push_back("SortPrice-D");
-        printhistorySeq(historySeq);
+        printHistorySeq(historySeq);
 
         sort(record.begin(), record.end(), [](Records a, Records b)
             {return a.price > b.price; });
@@ -1061,7 +1067,7 @@ void SortByQuantity(vector<Records>& record, vector<string>& historySeq, string 
         system("cls");
 
         historySeq.push_back("SortQty-A");
-        printhistorySeq(historySeq);
+        printHistorySeq(historySeq);
 
         sort(record.begin(), record.end(), [](Records a, Records b)
             {return a.quantity < b.quantity; });
@@ -1080,7 +1086,7 @@ void SortByQuantity(vector<Records>& record, vector<string>& historySeq, string 
         system("cls");
 
         historySeq.push_back("SortQty-D");
-        printhistorySeq(historySeq);
+        printHistorySeq(historySeq);
 
         sort(record.begin(), record.end(), [](Records a, Records b)
             {return a.quantity > b.quantity; });
@@ -1160,29 +1166,31 @@ void removeDuplicates(vector<Records>& record, vector<string>& historySeq)
     system("cls");
 
     historySeq.push_back("removeDupes");
-    printhistorySeq(historySeq); 
+    printHistorySeq(historySeq); 
 
     cout << "---Checking for duplicates." << endl;
     printVector(record);
 
     cout << endl << "---Detected duplicates: " << endl;
+
     for (int current = 1; current < record.size(); current++)
     {
+        
         if (record[current].name == record[previous].name)
         {
+            
             cout << "---index " << previous << " ["
                 << record[previous].name << ":"
                 << record[previous].price << ":"
-                << record[previous].quantity << "]";
+                << record[previous].quantity << "]" << endl;
 
-            cout << " - index " << current << " ["
+            cout << "---index " << current << " ["
                 << record[current].name << ":"
                 << record[current].price << ":"
                 << record[current].quantity << "] " << endl;
 
-            do 
-            {
-                cout << "Indicate index of the duplicate to remove: ";
+            
+                cout << "Indicate index # of the duplicate to remove: ";
                 cin >> dupetoRemove;
                 cout << endl;
 
@@ -1196,25 +1204,25 @@ void removeDuplicates(vector<Records>& record, vector<string>& historySeq)
                 }
                 else
                 {
+                    cin.clear();
+                    cin.ignore();
                     cout << "Invalid input." << endl;
                     cout << "Input the index number of the duplicate to remove." << endl;
-                    Repeat = true;
+                    removeDuplicates(record, historySeq);
 
-                }
-
-            } while (Repeat);
-
+                }       
             detected_dupes++;
-        }
+        }      
         previous++;
     }
+    
 
     if (detected_dupes == 0)
     {
         system("cls");
 
         historySeq.push_back("removeDupes");
-        printhistorySeq(historySeq);
+        printHistorySeq(historySeq);
 
         cout << "---No duplicates detected." << endl;
         printVector(record);
@@ -1223,7 +1231,7 @@ void removeDuplicates(vector<Records>& record, vector<string>& historySeq)
     }
 
     system("cls");
-    printhistorySeq(historySeq);
+    printHistorySeq(historySeq);
     printVector(record);
 
     record.shrink_to_fit();
