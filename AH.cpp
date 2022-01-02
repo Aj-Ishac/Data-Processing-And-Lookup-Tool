@@ -12,9 +12,9 @@ using namespace std::chrono;
 struct Records {
 
     string name;
-    string productID;
-    float price;
-    int quantity;
+    //string productID;
+    float price = 0;
+    int quantity = 0;
 
 };
 
@@ -40,18 +40,50 @@ bool isdigitCheck(string);
 bool isalphaCheck(string);
 void CapacityCheck(vector<Records>);
 
-void GenerateProductID(vector<Records>&, vector<string>&);
-string GenerateKEY(string);
+//void GenerateProductID(vector<Records>&, vector<string>&);
+//string GenerateKEY(string);
 
 void ImportFile(vector<Records>&, vector<string>&);
 void MergeVectors(vector<Records>&, vector<Records>);
 void removeDuplicates(vector<Records>&, vector<string>&);
 
+/*
+The project is designed to compile data fed to the program to process, sort, and present records of inventory items.
+The project imports an initial third party data "basefile.txt" allowing for the following data manipulation processes:
+
+ 1. Sort By: Name/Price/Quantity
+ 2. Element: Insert/Modify/Remove
+ 3. Search Element
+ 4. Import and Merge File
+ 5. Check for Duplicates
+ 6. Output Records on File
+
+The following functions use BinarySearch for O(nlogn) time complexity 
+and as such require the data to be sorted by name at least once:
+
+ Modify Element
+ Remove Element
+ Search Element
+ Check for Duplicates
+
+When SortbyName(Ascending/Descending) is ran, the last Ascending or Descending preference will be saved for later use.
+Everytime a SortbyName-dependent function is ran, a Bool check will run against the vector to confirm if it is sorted or not.
+
+If SortbyName(Ascending/Descending) has not been run at least once before the listed events are ran, user will be prompted to do so.
+If SortbyName has been run at least once and the vector currently is not sorted, 
+the SortbyName(Ascending/Descending) preference will be used to sort before a SortbyName-dependent function is ran.
+This is to prevent the user from needing to manually SortbyName every time the vector is modified and thus not sorted.
+*/
+
 int main()
 {
+    //check for choice length. invalid if it is, prevents crash
+
+    //vector used for the base data
     vector<Records> record;
 
-    ifstream inFile("PriceList.txt");
+    ifstream inFile("basefile.txt");
+
     //throw error if file can't open
     if (!inFile)
     {
@@ -72,42 +104,20 @@ int main()
 
         record.push_back(tempV);
     }
-    
-    //NEXT    
-    
-    //when importing. configure a system to match 
-    //string to name, float to price, int to qty
-    
-    //output into basefile, analytics
-
-    //warning dept cleanup
-
-    //force name input to be under char[12]. set char limit
-    //store whatever, only print first x chars in table
-
-    //comments
-
-    //gen ID looking tiresome. consider removing by end of project
-
-    //add base table to ui when merging
-
-    //put print in struct as constructer
    
     cout << "---Base data from file-------------------" << endl;
-    outputTable(record);
 
     printVector(record);
     MenuController(record);
-
-    outputTable(record);
-
 
     inFile.close();
     return 0;
 }
 
 void MenuController(vector<Records>& record)
-{
+{  
+    //Menu controller used to for the user to interface through the various functions to process and output data.
+
     bool Repeat = true;
     bool isSorted = false;
     bool sortedName_A = false;
@@ -118,6 +128,8 @@ void MenuController(vector<Records>& record)
     string Sort_Order;
     vector<string> historySeq;
 
+    string input_diag;
+    bool bool_diag;
 
     do {
 
@@ -131,7 +143,7 @@ void MenuController(vector<Records>& record)
             switch (choice[0])
             {
             case '1':
-                //printtable: pass1, pass2, pass3
+                //print table:
                 system("cls");
 
                 historySeq.push_back("PrintRecords");
@@ -254,11 +266,6 @@ void MenuController(vector<Records>& record)
                 break;
 
             case '4':
-                //generateid:
-                GenerateProductID(record, historySeq);
-                break;
-
-            case '5':
                 //search:
                 quicksort(record, sortedName_A, sortedName_D, isSorted);
 
@@ -275,14 +282,14 @@ void MenuController(vector<Records>& record)
                 Search(record, historySeq);
                 break;
 
-            case '6':
+            case '5':
                 //import&merge file:
 
                 ImportFile(record, historySeq);
                 isSorted = false;
                 break;
 
-            case '7':
+            case '6':
                 //duplicate check:
                 quicksort(record, sortedName_A, sortedName_D, isSorted);
 
@@ -299,27 +306,36 @@ void MenuController(vector<Records>& record)
                 removeDuplicates(record, historySeq);
                 break;
 
-            case '8':
-                //diagnostics:
+            case '7':
+                //store records on file
+                outputTable(record);
+                historySeq.push_back("StoreRecords");
+                printVector(record);
                 break;
 
-            case '9':
-                //quit:
-
-                cout << endl;
-                return;
-
-            case '0':
+            case '8':
                 //restart:
                 system("cls");
                 historySeq.push_back("Restart");
                 printHistorySeq(historySeq);
                 printVector(record);
                 break;
+
+            case '9':
+                //quit:
+                cout << endl;
+                return;
+
+            default:
+                system("cls");
+                printHistorySeq(historySeq);
+                cout << "---Invalid input." << endl;
+                printVector(record);
             }
         }
         else
         {
+            //if input not valid
             system("cls");
             printHistorySeq(historySeq);
             cout << "---Invalid input. Digits valid only." << endl;
@@ -337,39 +353,20 @@ void printMainMenu(vector<Records> record)
     cout << " 1. Print Records" << endl;
     cout << " 2. Sort By: Name/Price/Quantity" << endl;
     cout << " 3. Element: Insert/Modify/Remove" << endl;
-    cout << " 4. Generate Product ID" << endl;
-    cout << " 5. Search Element" << endl;
-    cout << " 6. Import and Merge File" << endl;
-    cout << " 7. Check for Duplicates" << endl;
-    cout << " 8. Diagnostics" << endl;
+    cout << " 4. Search Element" << endl;
+    cout << " 5. Import and Merge File" << endl;
+    cout << " 6. Check for Duplicates" << endl;
+    cout << " 7. Store Records on File" << endl;
+    cout << " 8. Restart" << endl;
     cout << " 9. Quit" << endl;
-    cout << " 0. Restart" << endl;
     cout << "-----------------------------------------" << endl;
 
-    cout << "Input choice (0-9): ";
+    cout << "Input choice (1-9): ";
 
 }
 
 void printVector(vector<Records> vector)
 {
-    if (vector[0].productID.size() != 0) 
-    {
-
-        cout << "---Vector.size(): " << vector.size() << endl;
-        cout << "-----------------------------------------" << endl;
-        cout << endl << "     -ID-        -Name-       -Price-   -Qty-" << endl;
-        for (int i = 0; i < (int)vector.size(); i++)
-        {
-            cout << " ";
-            cout << left << vector[i].productID.substr(0, 10) << "   ";
-            cout << setw(10) << left << vector[i].name << "   ";
-            cout << setw(6) << right << fixed << setprecision(2) << vector[i].price << "   ";
-            cout << setw(6) << right << vector[i].quantity << "   ";
-            cout << endl;
-        }
-    }
-    else
-    {
         cout << "---Vector.size(): " << vector.size() << endl;
         cout << "-----------------------------------------" << endl;
         cout << endl << "  -Name-       -Price-    -Qty-" << endl;
@@ -380,12 +377,16 @@ void printVector(vector<Records> vector)
             cout << setw(8) << right << vector[i].quantity << "   ";
             cout << endl;
         }
-    }
-
 }
 
 void printHistorySeq(vector<string>& historySeq)
 {
+    /*
+    Vector of size 5 to store strings of actions user runs.
+    Functions run push a string of function name onto historySeq vector.
+    Prints historySeq vector contents to be used as history of actions used by the user.
+    */
+
     //remove historySeq[0] when vector.size() reaches 5. cap size() at 5.
     if (historySeq.size() > 4)
         historySeq.erase(historySeq.begin());
@@ -411,28 +412,17 @@ void printHistorySeq(vector<string>& historySeq)
 
 void outputTable(vector<Records> vector)
 {
+    //output current iteration of the base data table into a filename.txt of the user's choice. 
+
+    string filename;
+    cout << endl << "Input file name to store records (filename.txt): ";
+    cin >> filename;
+
+    system("cls");
     ofstream outputFile;
-    outputFile.open("outputFile.txt");
-    outputFile << "[outputFile.txt]" << endl;
-    //file .txt
-    if (vector[0].productID.size() != 0)
-    {
-        outputFile << "---Vector.Size(): " << vector.size() << endl;
-        outputFile << "---Vector.Capacity(): " << vector.capacity() << endl;
-        outputFile << "-----------------------------------------" << endl;
-        outputFile << endl << "     -ID-        -Name-       -Price-   -Qty-" << endl;
-        for (int i = 0; i < (int)vector.size(); i++)
-        {
-            outputFile << " ";
-            outputFile << left << vector[i].productID << "   ";
-            outputFile << setw(10) << left << vector[i].name << "   ";
-            outputFile << setw(6) << right << fixed << setprecision(2) << vector[i].price << "   ";
-            outputFile << setw(6) << right << vector[i].quantity << "   ";
-            outputFile << endl;
-        }
-    }
-    else
-    {
+    outputFile.open(filename);
+    outputFile << "[" << filename << "]" << endl;
+
         outputFile << "---Vector.size(): " << vector.size() << endl;
         outputFile << "---vector.capacity(): " << vector.capacity() << endl;
         outputFile << "-----------------------------------------" << endl;
@@ -444,9 +434,11 @@ void outputTable(vector<Records> vector)
             outputFile << setw(8) << right << vector[i].quantity << "   ";
             outputFile << endl;
         }
-    }
 
-}
+        cout << "---Records have been stored under " << filename << ". " << endl;
+
+        outputFile.close();
+} 
 
 void MergeVectors(vector<Records>& vector1, vector<Records> vector2)
 {
@@ -460,6 +452,14 @@ void MergeVectors(vector<Records>& vector1, vector<Records> vector2)
 
 void ImportFile(vector<Records>& record, vector<string>& historySeq)
 {
+    /*
+    Prompts user to input filename.txt of the file to merge with the base data table.
+    Checks if filename.txt exists, prompts error if not.
+    Reads the data from filename.txt into a tempV and pushes to local tempVector.
+    Calls MergeVectors(record, tempVector) that reserves memory of record.size() tempVector.size()
+    Releases memory from tempVector.
+    */
+
     vector<Records> tempVector;
     string filename;
 
@@ -510,11 +510,15 @@ void ImportFile(vector<Records>& record, vector<string>& historySeq)
 
 void Search(vector<Records> record, vector<string>& historySeq)
 {
+    /*
+    Requires vector to be SortbyName at least once in the program's lifetime, else prompts user to do so.
+    Prompts user to input name to lookup through the vector.
+    If ValueLookup exists, prints index # and [name:price:quantity] of the search name.
+    */
+
     string ValueLookup;
     cout << endl << "Search Name: ";
     cin >> ValueLookup;
-
-
 
     int index = BinarySearch(record, 0, record.size(), ValueLookup);
 
@@ -532,8 +536,7 @@ void Search(vector<Records> record, vector<string>& historySeq)
             << record[index].quantity << "] " << endl;
 
         printVector(record);
-        
-
+       
     }
 }
 
@@ -576,7 +579,7 @@ int BinarySearch(vector<Records> record, int low, int high, string ValueLookup)
     return -1;
 }
 
-string GenerateKEY(string NameToID)
+/*string GenerateKEY(string NameToID)
 {
     string EncodedID;
     int CharsToEncode_Above4[5];
@@ -631,9 +634,9 @@ string GenerateKEY(string NameToID)
     }
 
     return EncodedID;
-}
+}*/
 
-void GenerateProductID(vector<Records>& record, vector<string>& historySeq)
+/*void GenerateProductID(vector<Records>& record, vector<string>& historySeq)
 {
 
     for (int i = 0; i < (int)record.size(); i++)
@@ -648,10 +651,18 @@ void GenerateProductID(vector<Records>& record, vector<string>& historySeq)
 
     cout << "---Generating product ID on record items." << endl;
     printVector(record);
-}
+}*/
 
 void RemoveElement(vector<Records>& record, vector<string>& historySeq)
 {
+    /*
+    Prompts user to input element name to remove.
+    Binarysearch name to extract index.
+    Prompts user confirmation to remove [name:price:quantity].
+    Yes, removes index from the vector.
+    No, breaks out of the function.
+    */
+
     string Confirmation;
     string ElementToRemove;
     int index;
@@ -699,6 +710,21 @@ void RemoveElement(vector<Records>& record, vector<string>& historySeq)
 
 void ModifyElement(vector<Records>& record, vector<string>& historySeq)
 {
+    /*
+    Prompts user to input ElementToModify.
+    Binarysearch to look up index of ElementToModify.
+    If value exists, allows user to overrite [name:price:quantity]
+    Option for the user to input "nochange" if they choose to leave value unchanged.
+
+    Checks to only accept characters for name.
+    Checks to only accept digits for price, with the exception of "nochange".
+    Checks to only accept digits for quantity, with the exception of "nochange".
+
+    Prompts user confirmation to remove [name:price:quantity].
+    Yes, replaces non-"nochange" overrite values into index# of the ElementToModify.
+    No, breaks out of the function.
+    */
+
     string ModifyInput;
     string ElementToModify;
     int index;
@@ -802,11 +828,6 @@ void ModifyElement(vector<Records>& record, vector<string>& historySeq)
                 << record[index].name << ":"
                 << record[index].price << ":"
                 << record[index].quantity << "] to [";
-                /* << InsertName << ":"
-                << InsertPrice_Float << ":"
-                << InsertQuantity_Int << "] "
-                << endl;*/
-
 
             if(InsertName != "nochange")
             {
@@ -845,6 +866,17 @@ void ModifyElement(vector<Records>& record, vector<string>& historySeq)
 
 void InsertElement(vector<Records>& record, vector<string>& historySeq)
 {
+    /*
+    Prompts user to input values of a new element to be inserted into the vector [name:price:quantity].
+    Checks to only accept characters for name.
+    Checks to only accept digits for price.
+    Checks to only accept digits for quantity.
+
+    Prompts user confirmation to insert [name:price:quantity].
+    Yes, inserts element in the vector
+    No, breaks out of the function.
+    */
+
     Records DummyElement;
 
     string InsertName;
@@ -947,6 +979,19 @@ void InsertElement(vector<Records>& record, vector<string>& historySeq)
 
 void SortByName(vector<Records>& record, vector<string>& historySeq, string OrderPreference, bool& sortedName_A, bool& sortedName_D)
 {
+    /*
+    Prompts user to input sort preference (ascending/descending).
+    If input matches preference input string, sort based on preference
+
+    If ascending preference is chosen:
+    Returns bool sortedName_A = true and bool sortedName_D = false to be used as saved preference.
+    If descending preference is chosen:
+    Returns bool sortedName_A = false and bool sortedName_D = true to be used as saved preference.
+
+    If preference input is invalid:
+    Repeat.
+    */
+
     string Repeat;
 
     cout << "Sort By (Ascending/Descending): ";
@@ -1004,6 +1049,13 @@ void SortByName(vector<Records>& record, vector<string>& historySeq, string Orde
 
 void SortByPrice(vector<Records>& record, vector<string>& historySeq, string OrderPreference)
 {
+    /*
+    Prompts user to input sort preference (ascending/descending).
+    If input matches preference input string, sort based on preference
+    If preference input is invalid:
+    Repeat.
+    */
+
     string Repeat;
 
     cout << "Sort By (Ascending/Descending): ";
@@ -1056,6 +1108,13 @@ void SortByPrice(vector<Records>& record, vector<string>& historySeq, string Ord
 
 void SortByQuantity(vector<Records>& record, vector<string>& historySeq, string OrderPreference)
 {
+    /*
+    Prompts user to input sort preference (ascending/descending).
+    If input matches preference input string, sort based on preference
+    If preference input is invalid:
+    Repeat.
+    */
+
     string Repeat;
 
     cout << "Sort By (Ascending/Descending): ";
@@ -1110,6 +1169,12 @@ void SortByQuantity(vector<Records>& record, vector<string>& historySeq, string 
 
 bool isdigitCheck(string InputToCheck)
 {
+    /*
+    Checks string input if it contains digits.
+    Returns true if digits are found.
+    Return false if no digits are found.
+    */
+
     for (int i = 0; i < (int)InputToCheck.size(); i++)
     {
         if (isdigit(InputToCheck[i]))
@@ -1126,7 +1191,13 @@ bool isdigitCheck(string InputToCheck)
 }
 
 bool isalphaCheck(string InputToCheck)
-{
+{   
+    /*
+    Checks string input if it contains characters.
+    Returns true if characters are found.
+    Return false if no characters are found.
+    */
+
     for (int i = 0; i < (int)InputToCheck.size(); i++)
     {
         if (isalpha(InputToCheck[i]))
@@ -1144,6 +1215,11 @@ bool isalphaCheck(string InputToCheck)
 
 void CapacityCheck(vector<Records> testVector)
 {
+    /*
+    Prints size() of vector.
+    Prints capacity() of vector.
+    */
+
     cout << endl;
     cout << "vector size: " << testVector.size() << endl;
     cout << "vector capacity: " << testVector.capacity() << endl;
@@ -1152,7 +1228,19 @@ void CapacityCheck(vector<Records> testVector)
 
 void removeDuplicates(vector<Records>& record, vector<string>& historySeq)
 {
-    
+    /*
+    Breaks function if size() = 0.
+    Runs for loop over the vector with an if statement checking for (record[current].name == record[previous].name)
+    For every success if statement check, detected_dupes++.
+
+    For dupes detected:
+    Allows user to input which of the two duplicates to remove based on index#.
+    Releases excess memory from elements that have been removed.
+
+    If no dupes detected:
+    Breaks function informing user that no dupes have been detected.
+    */
+
     if (record.size() == 0)
     {
         return;
@@ -1173,7 +1261,7 @@ void removeDuplicates(vector<Records>& record, vector<string>& historySeq)
 
     cout << endl << "---Detected duplicates: " << endl;
 
-    for (int current = 1; current < record.size(); current++)
+    for (int current = 1; current < (int)record.size(); current++)
     {
         
         if (record[current].name == record[previous].name)
@@ -1209,7 +1297,6 @@ void removeDuplicates(vector<Records>& record, vector<string>& historySeq)
                     cout << "Invalid input." << endl;
                     cout << "Input the index number of the duplicate to remove." << endl;
                     removeDuplicates(record, historySeq);
-
                 }       
             detected_dupes++;
         }      
@@ -1240,6 +1327,10 @@ void removeDuplicates(vector<Records>& record, vector<string>& historySeq)
 
 void quicksort(vector<Records>& record, bool sortedName_A, bool sortedName_D, bool& isSorted)
 {
+    /*
+    Mirror of SortbyName to auto sort based on saved SortbyName(Ascending/Descending) preference.
+    */
+
     if (isSorted == 0)
     {
         if (sortedName_A == 1)
