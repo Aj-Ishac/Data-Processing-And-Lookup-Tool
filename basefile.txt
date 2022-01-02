@@ -1,0 +1,15 @@
+[PriceList.txt]
+cashews 8.55 12
+peanut 8.55 14
+cookies 2.99 39
+ham 2.99 14
+diapers 9.99 21
+ziploc 2.55 23
+eggs 1.35 32
+trash 7.55 53
+sunscreen 3.99 11
+oatmeal 3.99 22
+pen 0.99 58
+paper 11.99 89
+deodorant 4.88 18
+crackers 0.99 8
