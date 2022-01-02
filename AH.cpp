@@ -77,7 +77,13 @@ This is to prevent the user from needing to manually SortbyName every time the v
 
 int main()
 {
-    //check for choice length. invalid if it is, prevents crash
+    /*
+    Throws an error if fails to open basefile.txt
+    If basefile.txt successfuly opens, reads data from file 
+    and imports them into a vector of structs to be the base vector of the program.
+    
+    Runs menucontroller and closes file when menucontroller exits.
+    */
 
     //vector used for the base data
     vector<Records> record;
@@ -115,8 +121,19 @@ int main()
 }
 
 void MenuController(vector<Records>& record)
-{  
-    //Menu controller used to for the user to interface through the various functions to process and output data.
+{   /*
+    Menu controller used to for the user to interface through the various functions to process and output data.
+
+    1. Print Records
+    2. Sort By: Name/Price/Quantity
+    3. Element: Insert/Modify/Remove
+    4. Search Element
+    5. Import and Merge File
+    6. Check for Duplicates
+    7. Store Records on File
+    8. Restart
+    9. Quit
+    */
 
     bool Repeat = true;
     bool isSorted = false;
@@ -124,7 +141,7 @@ void MenuController(vector<Records>& record)
     bool sortedName_D = false;
     bool invalidChoice;
     
-    char choice[12];
+    char choice[6];
     string Sort_Order;
     vector<string> historySeq;
 
@@ -136,9 +153,11 @@ void MenuController(vector<Records>& record)
         printMainMenu(record);
         cin >> choice;
         
+        
+
         //checks if choice[] input is alphabetical.forces a try again if so
         invalidChoice = isalphaCheck(choice);
-        if (invalidChoice == false)
+        if (invalidChoice == false && strlen(choice) < 2)
         {
             switch (choice[0])
             {
@@ -335,11 +354,23 @@ void MenuController(vector<Records>& record)
         }
         else
         {
-            //if input not valid
-            system("cls");
-            printHistorySeq(historySeq);
-            cout << "---Invalid input. Digits valid only." << endl;
-            printVector(record);
+            if (strlen(choice) > 2)
+            {
+                //if input above length 1
+                system("cls");
+                printHistorySeq(historySeq);
+                cout << "---Invalid input. Input of length 1 only." << endl;
+                printVector(record);
+            }
+            else
+            {
+                //if characters exist
+                system("cls");
+                printHistorySeq(historySeq);
+                cout << "---Invalid input. Digits valid only." << endl;
+                printVector(record);
+            }
+            
         }
     } while (Repeat);
 }
