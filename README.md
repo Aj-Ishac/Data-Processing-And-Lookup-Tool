@@ -8,8 +8,8 @@ The project imports an initial third party data "basefile.txt" allowing for the 
  5. Check for Duplicates
  6. Output Records on File
 
-WIP:
- 1. Split receipt based on product keywords
- 2. Connectivity to the wip python-based user-input webscraper
- 3. Interactive GUI
- 4. Export to CSV
+WIP:  
+ 1. Split receipt based on product keywords  
+ 2. Connectivity to the wip python-based user-input webscraper  
+ 3. Interactive GUI  
+ 4. Export to CSV  
