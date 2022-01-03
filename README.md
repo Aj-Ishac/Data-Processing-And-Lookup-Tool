@@ -10,7 +10,7 @@ The project imports an initial third party data "basefile.txt" allowing for the 
 
 Work in progress:  
  1. Split receipt based on product keywords.
- 2. Seamless communication with the WIP User-Input-Webscraping-Tool.
+ 2. Seamless communication with the WIP Price-Webscraping-Tool
  3. Simplify data presented to the user for quick purchase decision making.
  4. Interactive GUI.
  5. Export to CSV.  
