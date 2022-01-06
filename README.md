@@ -8,9 +8,9 @@ The project imports an initial third party data "basefile.txt" allowing for the 
  5. Check for Duplicates.
  6. Output Records on File.
 
-Work in progress:  
- 1. Split receipt based on product keywords.
- 2. Seamless communication with the WIP Price-Webscraping-Tool
- 3. Simplify data presented to the user for quick purchase decision making.
- 4. Interactive GUI.
- 5. Export to CSV.  
+Additional work underway:
+ 1. Integrate Newegg-GPU-Webscraping-Tool into Data-Processing-And-Lookup-Tool functionality.
+ 2. Split receipt based on product keywords. (by RTX 3070, for example)
+ 3. Remove all records of receipt above X price.
+ 4. Update shared CSV between Newegg-GPU-Webscraping-Tool and Data-Processing-And-Lookup-Tool functionality.
+
